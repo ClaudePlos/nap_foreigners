@@ -73,7 +73,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         checkbox.setLabel("Polskie?");
         checkbox.setValue(false);
         checkbox.addValueChangeListener(event -> {getWorkersToAccept(event.getValue());});
-        add(checkbox);
+        //add(checkbox);
 
         VaadinSession session = VaadinSession.getCurrent();
         userLogged = session.getAttribute(User.class);
