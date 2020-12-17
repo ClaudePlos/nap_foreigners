@@ -7,6 +7,7 @@ import org.vaadin.artur.helpers.CrudService;
 import pl.kskowronski.data.entity.egeria.ek.Worker;
 import pl.kskowronski.data.entity.inap.Document;
 import pl.kskowronski.data.entity.inap.DocumentDTO;
+import pl.kskowronski.data.service.global.EatFirmaRepo;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -27,6 +28,9 @@ public class DocumentService extends CrudService<Document, BigDecimal> {
         return repo;
     }
 
+    @Autowired
+    private EatFirmaRepo eatFirmaRepo;
+
     public Optional<List<DocumentDTO>> getDocumentForPrc(BigDecimal prcId){
         Optional<List<DocumentDTO>> documentsDTO = Optional.of(new ArrayList<>());
         Optional<List<Document>> documents = repo.getDocumentForPrc(prcId);
@@ -42,6 +46,7 @@ public class DocumentService extends CrudService<Document, BigDecimal> {
         docDTO.setFrmId(doc.getFrmId());
         docDTO.setNazwa(doc.getNazwa());
         docDTO.setOpis(doc.getOpis());
+        docDTO.setFrmName( eatFirmaRepo.findById(doc.getFrmId()).get().getFrmNazwa() );
         return docDTO;
     }
 

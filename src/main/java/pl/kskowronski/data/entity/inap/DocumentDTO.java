@@ -8,7 +8,8 @@ public class DocumentDTO {
     private BigDecimal id;
     private String nazwa;
     private String opis;
-    private BigDecimal frmId ;
+    private BigDecimal frmId;
+    private String frmName;
 
     public DocumentDTO() {
     }
@@ -45,4 +46,11 @@ public class DocumentDTO {
         this.frmId = frmId;
     }
 
+    public String getFrmName() {
+        return frmName;
+    }
+
+    public void setFrmName(String frmName) {
+        this.frmName = frmName;
+    }
 }

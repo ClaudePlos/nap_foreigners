@@ -87,7 +87,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         getWorkersToAccept(false);
 
         gridWorkersToAccept.setColumns("status","prcNumer", "prcNazwisko", "prcImie", "prcObywatelstwo", "runDate");
-        gridDocuments.setColumns("nazwa", "opis", "frmId");
+        gridDocuments.setColumns("nazwa", "opis", "frmName");
 
         gridWorkersToAccept.addColumn(TemplateRenderer.<WorkerDTO> of(
                 "<div title='[[item.sk]] [[item.runProcess]]'>[[item.sk]]<br><small>[[item.runProcess]]</small></div>")
@@ -124,17 +124,26 @@ public class WorkersToAcceptationView extends HorizontalLayout {
 
         gridWorkersToAccept.addColumn(new NativeButtonRenderer<WorkerDTO>("Akceptuję",
                 item -> {
-                    workerService.acceptForeignerApplication("Zaakceptowane przez HR (" + userLogged.getUsername()  +")", item.getProcesId());
-                    NapForeignerLog napForeignerLog = new NapForeignerLog();
-                    napForeignerLog.setPrcId(item.getPrcId());
-                    napForeignerLog.setStatus(NapForeignerLog.STATUS_ACCEPT);
-                    napForeignerLog.setDescription("Zaakceptowane przez HR (" + userLogged.getUsername()  +")");
-                    napForeignerLog.setWhoDecided(userLogged.getUsername());
-                    napForeignerLog.setWhenDecided(new Date());
-                    napForeignerLogService.save(napForeignerLog);
-                    Notification.show("Zaakceptowano process: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
-                    this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
-                    this.gridWorkersToAccept.getDataProvider().refreshAll();
+                    Dialog dialog = new Dialog();
+                    dialog.add(new Text("Podaj powód: "));
+                    Input inputReject = new Input();
+                    inputReject.setValue("OK");
+                    Button confirmButton = new Button("Akceptuję", event -> {
+                        workerService.acceptForeignerApplication("Zaakceptowane przez HR (" + userLogged.getUsername() + ")" + inputReject.getValue()
+                                , item.getProcesId());
+                        NapForeignerLog napForeignerLog = new NapForeignerLog();
+                        napForeignerLog.setPrcId(item.getPrcId());
+                        napForeignerLog.setStatus(NapForeignerLog.STATUS_ACCEPT);
+                        napForeignerLog.setDescription("Zaakceptowane przez HR (" + userLogged.getUsername() + ")");
+                        napForeignerLog.setWhoDecided(userLogged.getUsername());
+                        napForeignerLog.setWhenDecided(new Date());
+                        napForeignerLogService.save(napForeignerLog);
+                        Notification.show("Zaakceptowano process: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
+                        this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
+                        this.gridWorkersToAccept.getDataProvider().refreshAll();
+                    });
+                    dialog.add(inputReject, confirmButton);
+                    dialog.open();
                 }
         )).setWidth("50px");
 
