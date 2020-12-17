@@ -18,6 +18,9 @@ public class Requirement {
     @Column(name = "PROCES_ID")
     private BigDecimal procesId;
 
+    @Column(name = "FRM_ID")
+    private BigDecimal frmId;
+
     public BigDecimal getId() {
         return id;
     }
@@ -32,5 +35,13 @@ public class Requirement {
 
     public void setProcesId(BigDecimal procesId) {
         this.procesId = procesId;
+    }
+
+    public BigDecimal getFrmId() {
+        return frmId;
+    }
+
+    public void setFrmId(BigDecimal frmId) {
+        this.frmId = frmId;
     }
 }

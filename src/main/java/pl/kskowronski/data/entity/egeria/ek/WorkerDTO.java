@@ -20,6 +20,7 @@ public class WorkerDTO {
     private String runProcess;
     private Date runDate;
     private String status;
+    private String frmName;
 
     public WorkerDTO() {
     }
@@ -134,5 +135,13 @@ public class WorkerDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getFrmName() {
+        return frmName;
+    }
+
+    public void setFrmName(String frmName) {
+        this.frmName = frmName;
     }
 }

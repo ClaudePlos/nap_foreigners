@@ -19,18 +19,19 @@ import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
+import org.checkerframework.checker.nullness.Opt;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.kskowronski.data.entity.egeria.ek.Worker;
 import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
-import pl.kskowronski.data.entity.inap.DocumentDTO;
-import pl.kskowronski.data.entity.inap.NapForeignerLog;
-import pl.kskowronski.data.entity.inap.RequirementKey;
-import pl.kskowronski.data.entity.inap.User;
+import pl.kskowronski.data.entity.inap.*;
 import pl.kskowronski.data.service.MapperDate;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
+import pl.kskowronski.data.service.global.EatFirmaRepo;
+import pl.kskowronski.data.service.global.EatFirmaService;
 import pl.kskowronski.data.service.inap.DocumentService;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
 import pl.kskowronski.data.service.inap.RequirementKeyService;
+import pl.kskowronski.data.service.inap.RequirementService;
 import pl.kskowronski.views.main.MainView;
 import com.vaadin.flow.router.RouteAlias;
 
@@ -62,7 +63,9 @@ public class WorkersToAcceptationView extends HorizontalLayout {
     public WorkersToAcceptationView(@Autowired WorkerService workerService
             , @Autowired DocumentService documentService
             , @Autowired NapForeignerLogService napForeignerLogService
-            , @Autowired RequirementKeyService requirementKeyService) {
+            , @Autowired RequirementKeyService requirementKeyService
+            , @Autowired RequirementService requirementService
+            , @Autowired EatFirmaService eatFirmaService) {
         this.workerService = workerService;
         this.documentService = documentService;
         this.napForeignerLogService = napForeignerLogService;
@@ -101,6 +104,8 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                     Dialog dialog = new Dialog();
                     dialog.add(new Html("<b>Szczegóły wniosku:</b>"));
                     VerticalLayout vertical = new VerticalLayout ();
+                    Optional<Requirement> requirement = requirementService.getRequirementForProcess(item.getProcesId());
+                    dialog.add( eatFirmaService.findById(requirement.get().getFrmId()).get().getFrmNazwa());
                     Optional<List<RequirementKey>> requirements = requirementKeyService.getRequirementForProcess(item.getProcesId());
                     if (requirements.get().size() > 0){
                         requirements.get().stream().forEach( e -> {

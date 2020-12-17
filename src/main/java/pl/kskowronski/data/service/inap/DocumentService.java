@@ -46,7 +46,10 @@ public class DocumentService extends CrudService<Document, BigDecimal> {
         docDTO.setFrmId(doc.getFrmId());
         docDTO.setNazwa(doc.getNazwa());
         docDTO.setOpis(doc.getOpis());
-        docDTO.setFrmName( eatFirmaRepo.findById(doc.getFrmId()).get().getFrmNazwa() );
+        if (doc.getFrmId() != null ){
+            docDTO.setFrmName( eatFirmaRepo.findById(doc.getFrmId()).get().getFrmNazwa() );
+        }
+
         return docDTO;
     }
 
