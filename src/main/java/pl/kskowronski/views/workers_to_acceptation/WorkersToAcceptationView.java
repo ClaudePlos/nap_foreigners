@@ -21,10 +21,12 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import org.checkerframework.checker.nullness.Opt;
 import org.springframework.beans.factory.annotation.Autowired;
+import pl.kskowronski.data.entity.egeria.ek.Occupation;
 import pl.kskowronski.data.entity.egeria.ek.Worker;
 import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
 import pl.kskowronski.data.entity.inap.*;
 import pl.kskowronski.data.service.MapperDate;
+import pl.kskowronski.data.service.egeria.ek.OccupationRepo;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
 import pl.kskowronski.data.service.global.EatFirmaRepo;
 import pl.kskowronski.data.service.global.EatFirmaService;
@@ -65,7 +67,8 @@ public class WorkersToAcceptationView extends HorizontalLayout {
             , @Autowired NapForeignerLogService napForeignerLogService
             , @Autowired RequirementKeyService requirementKeyService
             , @Autowired RequirementService requirementService
-            , @Autowired EatFirmaService eatFirmaService) {
+            , @Autowired EatFirmaService eatFirmaService
+            , @Autowired OccupationRepo occupationRepo) {
         this.workerService = workerService;
         this.documentService = documentService;
         this.napForeignerLogService = napForeignerLogService;
@@ -102,16 +105,24 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                 item -> {
 
                     Dialog dialog = new Dialog();
-                    dialog.add(new Html("<b>Szczegóły wniosku:</b><br><br>"));
+                    dialog.add(new Html("<b>Szczegóły wniosku:</b>"));
                     VerticalLayout vertical = new VerticalLayout ();
                     Optional<Requirement> requirement = requirementService.getRequirementForProcess(item.getProcesId());
-                    dialog.add( eatFirmaService.findById(requirement.get().getFrmId()).get().getFrmNazwa());
+                    dialog.add( " " +  eatFirmaService.findById(requirement.get().getFrmId()).get().getFrmNazwa());
                     Optional<List<RequirementKey>> requirements = requirementKeyService.getRequirementForProcess(item.getProcesId());
                     if (requirements.get().size() > 0){
                         requirements.get().stream().forEach( e -> {
                                     String num = e.getLiczba() == BigDecimal.ZERO ? "" : e.getLiczba().toString();
                                     String text = e.getTekst() == null ? "" : e.getTekst();
                                     String date = mapperDate.dtYYYYMMDD.format(e.getDate()).equals("1970-01-01") ? "" : mapperDate.dtYYYYMMDD.format(e.getDate());
+
+                                    if (e.getType().equals("STN_PRACY")){
+                                        Optional<Occupation> occupation = occupationRepo.findById(e.getLiczba());
+                                        if (occupation.isPresent()){
+                                            text = occupation.get().getStnNazwa();
+                                        }
+                                    }
+
                                     Label lab = new Label(e.getType() + ": "+ num + date + text);
                                     vertical.add(lab);
                                 }
