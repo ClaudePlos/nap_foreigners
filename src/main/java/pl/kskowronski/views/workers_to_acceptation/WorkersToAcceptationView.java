@@ -102,7 +102,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                 item -> {
 
                     Dialog dialog = new Dialog();
-                    dialog.add(new Html("<b>Szczegóły wniosku:</b>"));
+                    dialog.add(new Html("<b>Szczegóły wniosku:</b><br><br>"));
                     VerticalLayout vertical = new VerticalLayout ();
                     Optional<Requirement> requirement = requirementService.getRequirementForProcess(item.getProcesId());
                     dialog.add( eatFirmaService.findById(requirement.get().getFrmId()).get().getFrmNazwa());
