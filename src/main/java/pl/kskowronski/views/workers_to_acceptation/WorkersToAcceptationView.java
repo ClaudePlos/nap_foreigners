@@ -153,6 +153,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         napForeignerLog.setDescription("Zaakceptowane przez HR (" + userLogged.getUsername() + ")");
                         napForeignerLog.setWhoDecided(userLogged.getUsername());
                         napForeignerLog.setWhenDecided(new Date());
+                        napForeignerLog.setFrmName(item.getFrmName());
                         napForeignerLogService.save(napForeignerLog);
                         Notification.show("Zaakceptowano process: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
                         this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view

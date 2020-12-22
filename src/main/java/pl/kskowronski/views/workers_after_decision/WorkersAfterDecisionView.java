@@ -1,12 +1,15 @@
 package pl.kskowronski.views.workers_after_decision;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -19,7 +22,10 @@ import pl.kskowronski.data.service.MapperDate;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
 import pl.kskowronski.views.main.MainView;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -30,6 +36,7 @@ import java.util.Optional;
 @Route(value = "after_decision", layout = MainView.class)
 @PageTitle("after decision")
 @CssImport("./styles/views/workers_to_acceptation/workers-to-acceptation-view.css")
+@JavaScript("./js/notification.js")
 public class WorkersAfterDecisionView extends HorizontalLayout {
 
     NapForeignerLogService napForeignerLogService;
@@ -103,6 +110,14 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
         gridWorkersAfterDecision.addColumn("prcName");
         gridWorkersAfterDecision.addColumn("prcSurname");
 
+        gridWorkersAfterDecision.addColumn(new NativeButtonRenderer<NapForeignerLogDTO>("Powiadomienie",
+                item -> {
+                    Date dateNow = Date.from(LocalDate.now().minus(0, ChronoUnit.MONTHS).atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    String dateParam = mapperDate.dtDDMMYYYY.format(dateNow);
+
+                    GenerateNotificationPDF(item.getPrcName(), item.getPrcSurname(), item.getPrcNumber(), dateParam, item.getFrmName());
+
+                }));
 
         add(gridWorkersAfterDecision);
         getDataForPeriod();
@@ -115,6 +130,13 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
             Notification.show("Brak pozycji do wyświetlenia w danym miesiącu", 3000, Notification.Position.MIDDLE);
         }
         gridWorkersAfterDecision.setItems(foreigners.get());
+    }
+
+    private void GenerateNotificationPDF(String prcName, String prcSurname, BigDecimal prcNumber, String dateNow, String frmName){
+
+        String initFunction = "generateNotification($0, $1, $2, $3, $4, $5);";
+        UI.getCurrent().getPage().executeJs(initFunction, this, prcName, prcSurname, prcNumber.toString(), dateNow, frmName);
+
     }
 
 }

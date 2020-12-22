@@ -33,6 +33,9 @@ public class NapForeignerLog {
     @Temporal(TemporalType.DATE)
     private Date whenDecided;
 
+    @Column(name = "FRM_NAME")
+    private String frmName;
+
     public NapForeignerLog() {
     }
 
@@ -82,5 +85,13 @@ public class NapForeignerLog {
 
     public void setWhenDecided(Date whenDecided) {
         this.whenDecided = whenDecided;
+    }
+
+    public String getFrmName() {
+        return frmName;
+    }
+
+    public void setFrmName(String frmName) {
+        this.frmName = frmName;
     }
 }

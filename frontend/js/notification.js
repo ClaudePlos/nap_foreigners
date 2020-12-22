@@ -2,7 +2,7 @@ import * as pdfMake from './dist/pdfmake.js';
 import * as pdfFonts from './dist/vfs_fonts.js';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-function generateNotification(container, prcName, prcSurname, prcNumber, dateNow) {
+function generateNotification(container, prcName, prcSurname, prcNumber, dateNow, frmName) {
     console.log(prcName);
     var docDefinition = {
         content: [
@@ -22,7 +22,7 @@ function generateNotification(container, prcName, prcSurname, prcNumber, dateNow
             {
                 //TODO
                 alignment: 'left',
-                text: 'NAZWA FIRMY/IMIĘ I NAZWISKO +',
+                text: 'NAZWA FIRMY/IMIĘ I NAZWISKO ' + frmName,
                 fontSize: 12,
                 bold: true,
                 margin: [0, 25]

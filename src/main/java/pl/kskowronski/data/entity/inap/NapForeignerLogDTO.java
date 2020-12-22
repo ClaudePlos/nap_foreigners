@@ -17,6 +17,7 @@ public class NapForeignerLogDTO {
     private BigDecimal prcNumber;
     private String prcName;
     private String prcSurname;
+    private String frmName;
 
 
     public NapForeignerLogDTO() {
@@ -92,5 +93,13 @@ public class NapForeignerLogDTO {
 
     public void setPrcNumber(BigDecimal prcNumber) {
         this.prcNumber = prcNumber;
+    }
+
+    public String getFrmName() {
+        return frmName;
+    }
+
+    public void setFrmName(String frmName) {
+        this.frmName = frmName;
     }
 }

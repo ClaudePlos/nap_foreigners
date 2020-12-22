@@ -10,6 +10,7 @@ public class MapperDate {
     public SimpleDateFormat dtYYYY = new SimpleDateFormat("yyyy");
     public SimpleDateFormat dtYYYYMM = new SimpleDateFormat("yyyy-MM");
     public SimpleDateFormat dtDD = new SimpleDateFormat("dd");
+    public SimpleDateFormat dtDDMMYYYY = new SimpleDateFormat("dd.MM.yyyy");
 
     public DateTimeFormatter ldYYYYMMDD = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
