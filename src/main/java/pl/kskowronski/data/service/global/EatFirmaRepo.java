@@ -10,4 +10,6 @@ public interface EatFirmaRepo extends JpaRepository<EatFirma, BigDecimal> {
 
     Optional<EatFirma> findById(BigDecimal frmId);
 
+    Optional<EatFirma> findByFrmNazwa(String frmName);
+
 }

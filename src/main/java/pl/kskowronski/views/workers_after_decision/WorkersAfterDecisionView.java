@@ -16,9 +16,11 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
+import pl.kskowronski.data.entity.global.EatFirma;
 import pl.kskowronski.data.entity.inap.NapForeignerLog;
 import pl.kskowronski.data.entity.inap.NapForeignerLogDTO;
 import pl.kskowronski.data.service.MapperDate;
+import pl.kskowronski.data.service.global.EatFirmaService;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
 import pl.kskowronski.views.main.MainView;
 
@@ -40,6 +42,7 @@ import java.util.Optional;
 public class WorkersAfterDecisionView extends HorizontalLayout {
 
     NapForeignerLogService napForeignerLogService;
+    EatFirmaService eatFirmaService;
 
     private Grid<NapForeignerLogDTO> gridWorkersAfterDecision;
 
@@ -49,8 +52,9 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
     private Button butMinus = new Button("-");
     private TextField textPeriod = new TextField("Okres");
 
-    public WorkersAfterDecisionView(@Autowired NapForeignerLogService napForeignerLogService) throws Exception {
+    public WorkersAfterDecisionView(@Autowired NapForeignerLogService napForeignerLogService, @Autowired EatFirmaService eatFirmaService) throws Exception {
         this.napForeignerLogService = napForeignerLogService;
+        this.eatFirmaService = eatFirmaService;
         setId("workers-to-acceptation-view");
         setHeight("95%");
 
@@ -133,6 +137,8 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
     }
 
     private void GenerateNotificationPDF(String prcName, String prcSurname, BigDecimal prcNumber, String dateNow, String frmName){
+
+        Optional<EatFirma> company = eatFirmaService.findByCompanyName(frmName);
 
         String initFunction = "generateNotification($0, $1, $2, $3, $4, $5);";
         UI.getCurrent().getPage().executeJs(initFunction, this, prcName, prcSurname, prcNumber.toString(), dateNow, frmName);
