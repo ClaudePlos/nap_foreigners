@@ -7,6 +7,7 @@ import pl.kskowronski.data.entity.egeria.ek.Foreigner;
 import pl.kskowronski.data.entity.egeria.ek.Worker;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,5 +28,8 @@ public interface WorkerRepo extends JpaRepository<Worker, BigDecimal> {
 
     @Query("select f from Foreigner f where f.prcId = :prcId")
     Optional<Foreigner> getForeignerForPrcId(@Param("prcId") BigDecimal prcId);
+
+    @Query("select w.prcDataUr from Worker w where w.prcId = :prcId")
+    Date getByPrcDataUrForPrcId(@Param("prcId") BigDecimal prcId);
 
 }

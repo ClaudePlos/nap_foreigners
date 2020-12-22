@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Entity
 @Table(name = "ek_pracownicy")
@@ -37,6 +38,9 @@ public class Worker {
 
     @Column(name = "PRC_OBYWATELSTWO")
     private String prcObywatelstwo;
+
+    @Column(name = "PRC_DATA_UR")
+    private Date prcDataUr;
 
     public Worker() {
     }
@@ -111,5 +115,13 @@ public class Worker {
 
     public void setPrcObywatelstwo(String prcObywatelstwo) {
         this.prcObywatelstwo = prcObywatelstwo;
+    }
+
+    public Date getPrcDataUr() {
+        return prcDataUr;
+    }
+
+    public void setPrcDataUr(Date prcDataUr) {
+        this.prcDataUr = prcDataUr;
     }
 }

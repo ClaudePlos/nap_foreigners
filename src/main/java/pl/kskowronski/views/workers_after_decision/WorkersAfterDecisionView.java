@@ -23,14 +23,12 @@ import pl.kskowronski.data.entity.inap.NapForeignerLogDTO;
 import pl.kskowronski.data.service.MapperDate;
 import pl.kskowronski.data.service.egeria.ckk.AddressRepo;
 import pl.kskowronski.data.service.egeria.ckk.AddressService;
+import pl.kskowronski.data.service.egeria.ek.WorkerService;
 import pl.kskowronski.data.service.global.EatFirmaService;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
 import pl.kskowronski.views.main.MainView;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -47,6 +45,7 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
     private NapForeignerLogService napForeignerLogService;
     private EatFirmaService eatFirmaService;
     private AddressService addressService;
+    private WorkerService workerService;
 
     private Grid<NapForeignerLogDTO> gridWorkersAfterDecision;
 
@@ -58,10 +57,12 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
 
     public WorkersAfterDecisionView(@Autowired NapForeignerLogService napForeignerLogService
             , @Autowired AddressService addressService
+            , @Autowired WorkerService workerService
             , @Autowired EatFirmaService eatFirmaService) throws Exception {
         this.napForeignerLogService = napForeignerLogService;
         this.eatFirmaService = eatFirmaService;
         this.addressService = addressService;
+        this.workerService = workerService;
         setId("workers-to-acceptation-view");
         setHeight("95%");
 
@@ -126,7 +127,7 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
                     Date dateNow = Date.from(LocalDate.now().minus(0, ChronoUnit.MONTHS).atStartOfDay(ZoneId.systemDefault()).toInstant());
                     String dateParam = mapperDate.dtDDMMYYYY.format(dateNow);
 
-                    GenerateNotificationPDF(item.getPrcName(), item.getPrcSurname(), item.getPrcNumber(), dateParam, item.getFrmName());
+                    GenerateNotificationPDF(item.getPrcId(), item.getPrcName(), item.getPrcSurname(), item.getPrcNumber(), dateParam, item.getFrmName());
 
                 }));
 
@@ -143,7 +144,7 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
         gridWorkersAfterDecision.setItems(foreigners.get());
     }
 
-    private void GenerateNotificationPDF(String prcName, String prcSurname, BigDecimal prcNumber, String dateNow, String frmName){
+    private void GenerateNotificationPDF(BigDecimal prcId, String prcName, String prcSurname, BigDecimal prcNumber, String dateNow, String frmName){
         String address = "";
         Optional<EatFirma> company = eatFirmaService.findByCompanyName(frmName);
         if (company.isPresent()){
@@ -155,9 +156,12 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
             }
         }
 
+        Date workerBirthDate = workerService.getWorkerBirthDate(prcId);
 
-        String initFunction = "generateNotification($0, $1, $2, $3, $4, $5, $6);";
-        UI.getCurrent().getPage().executeJs(initFunction, this, prcName, prcSurname, prcNumber.toString(), dateNow, frmName, address);
+        String initFunction = "generateNotification($0, $1, $2, $3, $4, $5, $6, $7);";
+        UI.getCurrent().getPage().executeJs(initFunction, this, prcName, prcSurname, prcNumber.toString(), dateNow, frmName
+                , address
+                , mapperDate.dtDDMMYYYY.format(workerBirthDate));
 
     }
 

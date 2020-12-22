@@ -2,7 +2,7 @@ import * as pdfMake from './dist/pdfmake.js';
 import * as pdfFonts from './dist/vfs_fonts.js';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-function generateNotification(container, prcName, prcSurname, prcNumber, dateNow, frmName, address) {
+function generateNotification(container, prcName, prcSurname, prcNumber, dateNow, frmName, address, workerBirthDate) {
     console.log(prcName);
     var docDefinition = {
         content: [
@@ -62,7 +62,7 @@ function generateNotification(container, prcName, prcSurname, prcNumber, dateNow
             {
                 alignment: 'left',
                 //TODO zamianst 00/00/0000 wpisać prawidłową datę
-                text:'urodzony/a dnia ......00/00/0000......, którego oświadczenie o powierzeniu',
+                text:'urodzony/a dnia ' + workerBirthDate + ', którego oświadczenie o powierzeniu',
                 fontSize: 12,
                 margin: [0,10]
 

@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +50,8 @@ public class WorkerService extends CrudService<Worker, BigDecimal> {
         }
         return workersDTO;
     }
+
+    public Date getWorkerBirthDate(BigDecimal prcId){ return repo.getByPrcDataUrForPrcId(prcId); }
 
     public Optional<List<WorkerDTO>> listWorkersToAccept(Boolean polishNationality) {
         consolidationService.setConsolidateCompany();
