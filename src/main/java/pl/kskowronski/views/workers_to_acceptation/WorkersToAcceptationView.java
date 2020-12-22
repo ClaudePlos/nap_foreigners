@@ -153,7 +153,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         napForeignerLog.setDescription("Zaakceptowane przez HR (" + userLogged.getUsername() + ")");
                         napForeignerLog.setWhoDecided(userLogged.getUsername());
                         napForeignerLog.setWhenDecided(new Date());
-                        napForeignerLog.setFrmName(item.getFrmName());
+                        napForeignerLog.setProcessId(item.getProcesId());
                         napForeignerLogService.save(napForeignerLog);
                         Notification.show("Zaakceptowano process: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
                         this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
@@ -178,6 +178,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         napForeignerLog.setDescription("Odrzucone przez HR (" + userLogged.getUsername()  +") Powód: " + inputReject.getValue());
                         napForeignerLog.setWhoDecided(userLogged.getUsername());
                         napForeignerLog.setWhenDecided(new Date());
+                        napForeignerLog.setProcessId(item.getProcesId());
                         napForeignerLogService.save(napForeignerLog);
                         Notification.show("Odrzucone process: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
                         this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view

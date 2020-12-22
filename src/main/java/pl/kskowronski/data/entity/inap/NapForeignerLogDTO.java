@@ -17,7 +17,7 @@ public class NapForeignerLogDTO {
     private BigDecimal prcNumber;
     private String prcName;
     private String prcSurname;
-    private String frmName;
+    private BigDecimal processId;
 
 
     public NapForeignerLogDTO() {
@@ -95,11 +95,11 @@ public class NapForeignerLogDTO {
         this.prcNumber = prcNumber;
     }
 
-    public String getFrmName() {
-        return frmName;
+    public BigDecimal getProcessId() {
+        return processId;
     }
 
-    public void setFrmName(String frmName) {
-        this.frmName = frmName;
+    public void setProcessId(BigDecimal processId) {
+        this.processId = processId;
     }
 }

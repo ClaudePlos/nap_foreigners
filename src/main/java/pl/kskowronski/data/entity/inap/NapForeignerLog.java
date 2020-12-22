@@ -33,8 +33,8 @@ public class NapForeignerLog {
     @Temporal(TemporalType.DATE)
     private Date whenDecided;
 
-    @Column(name = "FRM_NAME")
-    private String frmName;
+    @Column(name = "PROCESS_ID")
+    private BigDecimal processId;
 
     public NapForeignerLog() {
     }
@@ -87,11 +87,11 @@ public class NapForeignerLog {
         this.whenDecided = whenDecided;
     }
 
-    public String getFrmName() {
-        return frmName;
+    public BigDecimal getProcessId() {
+        return processId;
     }
 
-    public void setFrmName(String frmName) {
-        this.frmName = frmName;
+    public void setProcessId(BigDecimal processId) {
+        this.processId = processId;
     }
 }
