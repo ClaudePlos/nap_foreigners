@@ -1,11 +1,13 @@
 package pl.kskowronski.data.service.inap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 import pl.kskowronski.data.entity.inap.RequirementKey;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,5 +28,7 @@ public class RequirementKeyService extends CrudService<RequirementKey, BigDecima
     public Optional<List<RequirementKey>> getRequirementForProcess(BigDecimal processID){
         return repo.getRequirementForProcess(processID);
     }
+
+    public Date getDateFrom(BigDecimal processId){ return repo.getDateFrom(processId); }
 
 }

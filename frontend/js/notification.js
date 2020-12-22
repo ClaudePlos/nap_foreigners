@@ -2,7 +2,7 @@ import * as pdfMake from './dist/pdfmake.js';
 import * as pdfFonts from './dist/vfs_fonts.js';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-function generateNotification(container, prcName, prcSurname, prcNumber, dateNow, frmName, address, workerBirthDate) {
+function generateNotification(container, prcName, prcSurname, prcNumber, dateNow, frmName, address, workerBirthDate, startDate) {
     console.log(prcName);
     var docDefinition = {
         content: [
@@ -50,7 +50,7 @@ function generateNotification(container, prcName, prcSurname, prcNumber, dateNow
             },
             {
                 alignment: 'left',
-                text: 'Informuję, iż cudzoziemiec ......' + prcName + ' ' + prcSurname + '......',
+                text: 'Informuję, iż cudzoziemiec  ' + prcName + ' ' + prcSurname + ' ',
                 fontSize: 12,
                 margin: [0,10]
             },
@@ -75,7 +75,7 @@ function generateNotification(container, prcName, prcSurname, prcNumber, dateNow
             {
                 alignment: 'left',
                 text:'wykonywania pracy cudzoziemcowi zostało wpisane do ewidencji oświadczeń\n' +
-                    'pod numerem ......'+prcNumber+ '...... :',
+                    'pod numerem  '+prcNumber+ ' :',
                 fontSize: 12,
                 margin: [0,10]
             },
@@ -86,7 +86,7 @@ function generateNotification(container, prcName, prcSurname, prcNumber, dateNow
             },
             {
                 alignment: 'left',
-                text: 'rozpoczął pracę z dniem ( data rozpoczęcia pracy )',
+                text: 'rozpoczął pracę z dniem ( data rozpoczęcia pracy )  ' + startDate,
                 fontSize: 12,
                 margin: [25,10]
             },
@@ -98,7 +98,7 @@ function generateNotification(container, prcName, prcSurname, prcNumber, dateNow
             },
             {
                 alignment: 'left',
-                text: 'zakończył pracę z dniem ( data zakończenia pracy +data+ )',
+                text: 'zakończył pracę z dniem ( data zakończenia pracy  )',
                 fontSize: 12,
                 margin: [25,10]
             },
@@ -112,7 +112,7 @@ function generateNotification(container, prcName, prcSurname, prcNumber, dateNow
                 columns: [
                     {
                         alignment: 'center',
-                        text: '......ŁÓDŹ, '+ dateNow + '......',
+                        text: '  ŁÓDŹ, '+ dateNow + ' ',
                         margin: [0, 40, 0, 0]
                     },
                     {
