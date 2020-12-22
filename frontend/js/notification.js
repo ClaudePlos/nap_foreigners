@@ -2,7 +2,7 @@ import * as pdfMake from './dist/pdfmake.js';
 import * as pdfFonts from './dist/vfs_fonts.js';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-function generateNotification(container, prcName, prcSurname, prcNumber, dateNow, frmName) {
+function generateNotification(container, prcName, prcSurname, prcNumber, dateNow, frmName, address) {
     console.log(prcName);
     var docDefinition = {
         content: [
@@ -31,7 +31,7 @@ function generateNotification(container, prcName, prcSurname, prcNumber, dateNow
             {
                 //TODO
                 alignment: 'left',
-                text: 'ADRES SIEDZIBY/ZAMIESZKANIA +',
+                text: 'ADRES SIEDZIBY/ZAMIESZKANIA ' + address,
                 fontSize: 12,
                 bold: true,
                 margin: [0, 25]
