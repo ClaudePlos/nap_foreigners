@@ -26,6 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import pl.kskowronski.data.entity.inap.User;
 import pl.kskowronski.data.service.inap.UserService;
 import pl.kskowronski.views.workers_after_decision.WorkersAfterDecisionView;
+import pl.kskowronski.views.workers_suspended.WorkersSuspendedView;
 import pl.kskowronski.views.workers_to_acceptation.WorkersToAcceptationView;
 import pl.kskowronski.views.about.AboutView;
 
@@ -96,6 +97,7 @@ public class MainView extends AppLayout {
     private Component[] createMenuItems() {
         return new Tab[] {
             createTab("Do Akceptacji", WorkersToAcceptationView.class),
+            createTab("Zawieszeni", WorkersSuspendedView.class),
             createTab("Po decyzji", WorkersAfterDecisionView.class),
             createTab("About", AboutView.class)
         };

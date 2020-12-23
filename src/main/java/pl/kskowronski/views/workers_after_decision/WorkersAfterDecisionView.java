@@ -146,7 +146,7 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
 
 
     private void getDataForPeriod() throws Exception {
-        Optional<List<NapForeignerLogDTO>> foreigners = napForeignerLogService.findAllForPeriod(textPeriod.getValue());
+        Optional<List<NapForeignerLogDTO>> foreigners = napForeignerLogService.findAllAcceptAndDelForPeriod(textPeriod.getValue());
         if (foreigners.get().size() == 0) {
             Notification.show("Brak pozycji do wyświetlenia w danym miesiącu", 3000, Notification.Position.MIDDLE);
         }

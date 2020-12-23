@@ -49,10 +49,21 @@ public class NapForeignerLogService extends CrudService<NapForeignerLog, BigDeci
     };
 
 
-    public Optional<List<NapForeignerLogDTO>> findAllForPeriod(String period) throws Exception {
+    public Optional<List<NapForeignerLogDTO>> findAllAcceptAndDelForPeriod(String period) throws Exception {
         Optional<List<NapForeignerLogDTO>> foreignersDTO = Optional.of(new ArrayList<>());
         LocalDate ldLastDay = LocalDate.parse( period+"-01", mapperDate.ldYYYYMMDD).with(TemporalAdjusters.lastDayOfMonth());
-        Optional<List<NapForeignerLog>> foreigners = repo.findAllForPeriod(mapperDate.dtYYYYMMDD.parse(period+"-01")
+        Optional<List<NapForeignerLog>> foreigners = repo.findAllAcceptAndDelForPeriod(mapperDate.dtYYYYMMDD.parse(period+"-01")
+                , Date.from(ldLastDay.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
+        if (foreigners.isPresent()) {
+            foreigners.get().stream().forEach(item -> foreignersDTO.get().add(mapperNapForeignerLog(item)));
+        }
+        return foreignersDTO;
+    };
+
+    public Optional<List<NapForeignerLogDTO>> findAllSuspendedForPeriod(String period) throws Exception {
+        Optional<List<NapForeignerLogDTO>> foreignersDTO = Optional.of(new ArrayList<>());
+        LocalDate ldLastDay = LocalDate.parse( period+"-01", mapperDate.ldYYYYMMDD).with(TemporalAdjusters.lastDayOfMonth());
+        Optional<List<NapForeignerLog>> foreigners = repo.findAllSuspendedForPeriod(mapperDate.dtYYYYMMDD.parse(period+"-01")
                 , Date.from(ldLastDay.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
         if (foreigners.isPresent()) {
             foreigners.get().stream().forEach(item -> foreignersDTO.get().add(mapperNapForeignerLog(item)));

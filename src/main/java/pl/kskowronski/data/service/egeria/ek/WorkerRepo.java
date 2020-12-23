@@ -16,14 +16,13 @@ public interface WorkerRepo extends JpaRepository<Worker, BigDecimal> {
     @Query("select w from Worker w where w.prcDgKodEk = :prcDgKodEk and w.prcObywatelstwo != :nationality")
     Optional<List<Worker>> findByPrcDgKodEkAAndPrcObywatelstwoNotLike(@Param("prcDgKodEk") String prcDgKodEk, @Param("nationality") String nationality );
 
-    @Query("select w from Worker w " +
-            "where w.prcId in (select f.prcId from Foreigner f where f.prcObywatelstwo != 'Polskie' " +
-                "and 0 = (select count(1) from NapForeignerLog n where n.prcId = f.prcId and f.procesId = n.processId))")
+    @Query("select w from Worker w, Foreigner f where  w.prcId = f.prcId and f.prcObywatelstwo != 'Polskie' " +
+                "and 0 = (select count(1) from NapForeignerLog n where n.prcId = f.prcId and f.procesId = n.processId)")
     Optional<List<Worker>> listWorkersToAccept();
 
     @Query("select w from Worker w " +
             "where w.prcId in (select f.prcId from Foreigner f where f.prcObywatelstwo = 'Polskie' " +
-            "and 0 = (select count(1) from NapForeignerLog n where n.prcId = f.prcId and f.procesId = n.processId))")
+            "and 0 = (select count(1) from NapForeignerLog n where n.prcId = f.prcId))")
     Optional<List<Worker>> listWorkersToAcceptOnlyPolishNationality();
 
     @Query("select f from Foreigner f where f.prcId = :prcId")

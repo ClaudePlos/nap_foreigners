@@ -11,6 +11,7 @@ public class NapForeignerLog {
 
     public static String STATUS_ACCEPT = "ZAAKCEPTOWANE" ;
     public static String STATUS_NO_ACCEPT = "ODRZUCONE" ;
+    public static String STATUS_SUSPENDED = "ZAWIESZONE" ;
 
     @Id
     @Column(name = "ID")
@@ -35,6 +36,9 @@ public class NapForeignerLog {
 
     @Column(name = "PROCESS_ID")
     private BigDecimal processId;
+
+    @Column(name = "REFRESH")
+    private String refresh;
 
     public NapForeignerLog() {
     }
@@ -93,5 +97,13 @@ public class NapForeignerLog {
 
     public void setProcessId(BigDecimal processId) {
         this.processId = processId;
+    }
+
+    public String getRefresh() {
+        return refresh;
+    }
+
+    public void setRefresh(String refresh) {
+        this.refresh = refresh;
     }
 }

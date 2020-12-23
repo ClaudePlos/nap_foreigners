@@ -26,6 +26,7 @@ import pl.kskowronski.data.entity.egeria.ek.Worker;
 import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
 import pl.kskowronski.data.entity.inap.*;
 import pl.kskowronski.data.service.MapperDate;
+import pl.kskowronski.data.service.egeria.ek.ForeignerService;
 import pl.kskowronski.data.service.egeria.ek.OccupationRepo;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
 import pl.kskowronski.data.service.global.EatFirmaRepo;
@@ -50,6 +51,7 @@ import java.util.Optional;
 public class WorkersToAcceptationView extends HorizontalLayout {
 
     WorkerService workerService;
+    ForeignerService foreignerService;
     DocumentService documentService;
     NapForeignerLogService napForeignerLogService;
 
@@ -63,12 +65,14 @@ public class WorkersToAcceptationView extends HorizontalLayout {
     private MapperDate mapperDate = new MapperDate();
 
     public WorkersToAcceptationView(@Autowired WorkerService workerService
+            , @Autowired ForeignerService foreignerService
             , @Autowired DocumentService documentService
             , @Autowired NapForeignerLogService napForeignerLogService
             , @Autowired RequirementKeyService requirementKeyService
             , @Autowired RequirementService requirementService
             , @Autowired EatFirmaService eatFirmaService
             , @Autowired OccupationRepo occupationRepo) {
+        this.foreignerService = foreignerService;
         this.workerService = workerService;
         this.documentService = documentService;
         this.napForeignerLogService = napForeignerLogService;
@@ -92,12 +96,16 @@ public class WorkersToAcceptationView extends HorizontalLayout {
 
         getWorkersToAccept(false);
 
-        gridWorkersToAccept.setColumns("status","prcNumer", "prcNazwisko", "prcImie", "prcObywatelstwo", "runDate");
+        gridWorkersToAccept.setColumns("status","procesId","prcNumer", "prcNazwisko", "prcImie", "prcObywatelstwo");
+
+        gridWorkersToAccept.addColumn("runDate").setWidth("120px");
+
         gridDocuments.setColumns("nazwa", "opis", "frmName");
 
         gridWorkersToAccept.addColumn(TemplateRenderer.<WorkerDTO> of(
-                "<div title='[[item.sk]] [[item.runProcess]]'>[[item.sk]]<br><small>[[item.runProcess]]</small></div>")
+                "<div title='[[item.sk]] [[item.runProcess]] ProcId:[[item.processId]]'>[[item.sk]]<br><small>[[item.runProcess]]</small></div>")
                 .withProperty("sk", WorkerDTO::getSk)
+                .withProperty("processId", WorkerDTO::getProcesId)
                 .withProperty("runProcess", WorkerDTO::getRunProcess))
                 .setHeader("runProcess");
 
@@ -164,6 +172,36 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                 }
         )).setWidth("50px");
 
+
+        gridWorkersToAccept.addColumn(new NativeButtonRenderer<WorkerDTO>("Zawieszam",
+                item -> {
+                    Dialog dialog = new Dialog();
+                    dialog.add(new Text("Podaj powód: "));
+                    Input inputReject = new Input();
+                    Button confirmButton = new Button("Odrzucam", event -> {
+                        workerService.acceptForeignerApplication("Odrzucone przez HR (" + userLogged.getUsername()  +") Powód: " + inputReject.getValue()
+                                , item.getProcesId());
+                        NapForeignerLog napForeignerLog = new NapForeignerLog();
+                        napForeignerLog.setPrcId(item.getPrcId());
+                        napForeignerLog.setStatus(NapForeignerLog.STATUS_SUSPENDED);
+                        napForeignerLog.setDescription("Odrzucone przez HR (" + userLogged.getUsername()  +") Powód: " + inputReject.getValue());
+                        napForeignerLog.setWhoDecided(userLogged.getUsername());
+                        napForeignerLog.setWhenDecided(new Date());
+                        napForeignerLog.setProcessId(item.getProcesId());
+                        napForeignerLogService.save(napForeignerLog);
+                        Notification.show("Wnisek zawiszoney procId: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
+                        this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
+                        this.gridWorkersToAccept.getDataProvider().refreshAll();
+                        dialog.close();
+                    });
+                    dialog.add(inputReject, confirmButton);
+                    dialog.open();
+
+                }
+        )).setWidth("50px");
+
+
+
         gridWorkersToAccept.addColumn(new NativeButtonRenderer<WorkerDTO>("Odrzucam",
                 item -> {
                     Dialog dialog = new Dialog();
@@ -229,7 +267,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
     }
 
     private void getWorkersToAccept( Boolean polishNationality){
-        workers = workerService.listWorkersToAccept(polishNationality);
+        workers = foreignerService.findAll();
         if ( workers.get().size() == 0 ){
             Notification.show("Brak kandydatów do akceptacji", 3000, Notification.Position.MIDDLE);
         }

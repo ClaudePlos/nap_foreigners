@@ -12,11 +12,11 @@ import java.util.Date;
 public class Foreigner {
 
     @Id
-    @Column(name = "PRC_ID")
-    private BigDecimal prcId;
-
     @Column(name = "PROCES_ID")
     private BigDecimal procesId;
+
+    @Column(name = "PRC_ID")
+    private BigDecimal prcId;
 
     @Column(name = "PRC_NUMER")
     private BigDecimal prcNumer;
