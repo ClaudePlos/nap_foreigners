@@ -82,6 +82,7 @@ public class NapForeignerLogService extends CrudService<NapForeignerLog, BigDeci
         foreigner.setWhenDecided(f.getWhenDecided());
         foreigner.setWhoDecided(f.getWhoDecided());
         foreigner.setProcessId(f.getProcessId());
+        foreigner.setRefresh(f.getRefresh());
         if (worker.isPresent()){
             foreigner.setPrcNumber(worker.get().getPrcNumer());
             foreigner.setPrcName(worker.get().getPrcImie());

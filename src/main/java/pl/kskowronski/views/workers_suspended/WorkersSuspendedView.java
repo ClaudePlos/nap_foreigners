@@ -3,6 +3,7 @@ package pl.kskowronski.views.workers_suspended;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
 import pl.kskowronski.data.entity.inap.NapForeignerLogDTO;
 import pl.kskowronski.data.service.MapperDate;
+import pl.kskowronski.data.service.MyIcons;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
 import pl.kskowronski.views.main.MainView;
 
@@ -89,7 +91,12 @@ public class WorkersSuspendedView extends HorizontalLayout {
         this.gridWorkersSuspended = new Grid<>(NapForeignerLogDTO.class);
         this.gridWorkersSuspended.setHeightFull();
 
-        gridWorkersSuspended.setColumns("whenDecided", "whoDecided", "status");
+        gridWorkersSuspended.setColumns();
+        gridWorkersSuspended.addComponentColumn(item -> createIconTenderType(item)).setHeader("Refresh").setWidth("40px");
+
+        gridWorkersSuspended.addColumn("whenDecided");
+        gridWorkersSuspended.addColumn("whoDecided");
+        gridWorkersSuspended.addColumn("status");
 
 
         gridWorkersSuspended.addColumn(TemplateRenderer.<NapForeignerLogDTO>of(
@@ -115,6 +122,18 @@ public class WorkersSuspendedView extends HorizontalLayout {
             Notification.show("Brak pozycji do wyświetlenia w danym miesiącu", 3000, Notification.Position.MIDDLE);
         }
         gridWorkersSuspended.setItems(foreigners.get());
+    }
+
+
+    private Image createIconTenderType(NapForeignerLogDTO item) {
+
+        Image icon;
+        if (item.getRefresh().equals("N")){
+            icon = MyIcons.ICON_WAIT.create();
+        } else {
+            icon = MyIcons.ICON_OK.create();
+        }
+        return icon;
     }
 
 }

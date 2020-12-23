@@ -18,6 +18,7 @@ public class NapForeignerLogDTO {
     private String prcName;
     private String prcSurname;
     private BigDecimal processId;
+    private String refresh;
 
 
     public NapForeignerLogDTO() {
@@ -101,5 +102,13 @@ public class NapForeignerLogDTO {
 
     public void setProcessId(BigDecimal processId) {
         this.processId = processId;
+    }
+
+    public String getRefresh() {
+        return refresh;
+    }
+
+    public void setRefresh(String refresh) {
+        this.refresh = refresh;
     }
 }
