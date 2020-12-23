@@ -7,10 +7,12 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import org.springframework.beans.factory.annotation.Autowired;
+import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
 import pl.kskowronski.data.entity.inap.NapForeignerLogDTO;
 import pl.kskowronski.data.service.MapperDate;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
@@ -84,6 +86,25 @@ public class WorkersSuspendedView extends HorizontalLayout {
         add(butMinus, textPeriod, butPlus);
 
 
+        this.gridWorkersSuspended = new Grid<>(NapForeignerLogDTO.class);
+        this.gridWorkersSuspended.setHeightFull();
+
+        gridWorkersSuspended.setColumns("whenDecided", "whoDecided", "status");
+
+
+        gridWorkersSuspended.addColumn(TemplateRenderer.<NapForeignerLogDTO>of(
+                "<div title='[[item.description]]'>[[item.description]]</div>")
+                .withProperty("description", NapForeignerLogDTO::getDescription))
+                .setHeader("description");
+
+        gridWorkersSuspended.addColumn("prcNumber");
+        gridWorkersSuspended.addColumn("prcName");
+        gridWorkersSuspended.addColumn("prcSurname");
+
+        add(gridWorkersSuspended);
+
+
+        getDataForPeriod();
     }
 
 

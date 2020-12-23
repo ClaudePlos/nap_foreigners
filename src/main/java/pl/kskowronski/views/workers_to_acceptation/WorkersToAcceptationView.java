@@ -26,6 +26,7 @@ import pl.kskowronski.data.entity.egeria.ek.Worker;
 import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
 import pl.kskowronski.data.entity.inap.*;
 import pl.kskowronski.data.service.MapperDate;
+import pl.kskowronski.data.service.egeria.css.DictionaryService;
 import pl.kskowronski.data.service.egeria.ek.ForeignerService;
 import pl.kskowronski.data.service.egeria.ek.OccupationRepo;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
@@ -54,6 +55,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
     ForeignerService foreignerService;
     DocumentService documentService;
     NapForeignerLogService napForeignerLogService;
+    DictionaryService dictionaryService;
 
     private Grid<WorkerDTO> gridWorkersToAccept;
     private Grid<DocumentDTO> gridDocuments;
@@ -65,6 +67,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
     private MapperDate mapperDate = new MapperDate();
 
     public WorkersToAcceptationView(@Autowired WorkerService workerService
+             ,@Autowired DictionaryService dictionaryService
             , @Autowired ForeignerService foreignerService
             , @Autowired DocumentService documentService
             , @Autowired NapForeignerLogService napForeignerLogService
@@ -76,6 +79,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         this.workerService = workerService;
         this.documentService = documentService;
         this.napForeignerLogService = napForeignerLogService;
+        this.dictionaryService = dictionaryService;
         setId("workers-to-acceptation-view");
         setHeight("95%");
 
@@ -96,7 +100,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
 
         getWorkersToAccept(false);
 
-        gridWorkersToAccept.setColumns("status","procesId","prcNumer", "prcNazwisko", "prcImie", "prcObywatelstwo");
+        gridWorkersToAccept.setColumns("status","prcNumer", "prcNazwisko", "prcImie", "prcObywatelstwo");
 
         gridWorkersToAccept.addColumn("runDate").setWidth("120px");
 
@@ -128,6 +132,13 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                                         Optional<Occupation> occupation = occupationRepo.findById(e.getLiczba());
                                         if (occupation.isPresent()){
                                             text = occupation.get().getStnNazwa();
+                                        }
+                                    }
+
+                                    if (e.getType().equals("PRZEDMIOT_UMOWY")){
+                                        Optional<String> subjectOfTheContract = dictionaryService.getSubjectOfTheContract(text);
+                                        if (subjectOfTheContract.isPresent()){
+                                            text = subjectOfTheContract.get();
                                         }
                                     }
 
@@ -188,6 +199,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         napForeignerLog.setWhoDecided(userLogged.getUsername());
                         napForeignerLog.setWhenDecided(new Date());
                         napForeignerLog.setProcessId(item.getProcesId());
+                        napForeignerLog.setRefresh("N");
                         napForeignerLogService.save(napForeignerLog);
                         Notification.show("Wnisek zawiszoney procId: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
                         this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view

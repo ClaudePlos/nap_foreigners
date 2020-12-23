@@ -10,6 +10,7 @@ import pl.kskowronski.data.service.global.ConsolidationService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,9 +34,11 @@ public class ForeignerService extends CrudService<Foreigner, BigDecimal> {
 
     public Optional<List<WorkerDTO>> findAll(){
         consolidationService.setConsolidateCompany();
-        List<Foreigner> foreigners = repo.findAll(Sort.by("runProcess").descending());
+        List<Foreigner> foreigners = repo.findAll(Sort.by("runDate").descending());
         Optional<List<WorkerDTO>> workersDTO = Optional.of(new ArrayList<>());
-        foreigners.stream().forEach( item -> workersDTO.get().add( mapperWorker(item)));
+        foreigners.stream()
+                //.sorted(Comparator.comparing(Foreigner::getRunDate))
+                .forEach(item -> workersDTO.get().add( mapperWorker(item)));
         return workersDTO;
     }
 
