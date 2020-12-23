@@ -25,6 +25,7 @@ import pl.kskowronski.data.entity.egeria.ek.Occupation;
 import pl.kskowronski.data.entity.egeria.ek.Worker;
 import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
 import pl.kskowronski.data.entity.inap.*;
+import pl.kskowronski.data.service.MailService;
 import pl.kskowronski.data.service.MapperDate;
 import pl.kskowronski.data.service.egeria.css.DictionaryService;
 import pl.kskowronski.data.service.egeria.ek.ForeignerService;
@@ -39,6 +40,7 @@ import pl.kskowronski.data.service.inap.RequirementService;
 import pl.kskowronski.views.main.MainView;
 import com.vaadin.flow.router.RouteAlias;
 
+import javax.mail.MessagingException;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -56,6 +58,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
     DocumentService documentService;
     NapForeignerLogService napForeignerLogService;
     DictionaryService dictionaryService;
+    MailService mailService;
 
     private Grid<WorkerDTO> gridWorkersToAccept;
     private Grid<DocumentDTO> gridDocuments;
@@ -67,7 +70,8 @@ public class WorkersToAcceptationView extends HorizontalLayout {
     private MapperDate mapperDate = new MapperDate();
 
     public WorkersToAcceptationView(@Autowired WorkerService workerService
-             ,@Autowired DictionaryService dictionaryService
+            , @Autowired DictionaryService dictionaryService
+            , @Autowired MailService mailService
             , @Autowired ForeignerService foreignerService
             , @Autowired DocumentService documentService
             , @Autowired NapForeignerLogService napForeignerLogService
@@ -80,6 +84,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         this.documentService = documentService;
         this.napForeignerLogService = napForeignerLogService;
         this.dictionaryService = dictionaryService;
+        this.mailService = mailService;
         setId("workers-to-acceptation-view");
         setHeight("95%");
 
@@ -186,7 +191,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
 
         gridWorkersToAccept.addColumn(new NativeButtonRenderer<WorkerDTO>("Zawieszam",
                 item -> {
-                    Dialog dialog = new Dialog();
+                    /*Dialog dialog = new Dialog();
                     dialog.add(new Text("Podaj powód: "));
                     Input inputReject = new Input();
                     Button confirmButton = new Button("Odrzucam", event -> {
@@ -207,7 +212,16 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         dialog.close();
                     });
                     dialog.add(inputReject, confirmButton);
-                    dialog.open();
+                    dialog.open();*/
+
+
+                    try {
+                        mailService.sendMail("klaudiusz.skowronski@naprzod.pl","claude-plos@o2.pl",
+                                "Test",
+                                "<b>Co tam 100 zł</b><br>:P", true);
+                    } catch (MessagingException e) {
+                        e.printStackTrace();
+                    }
 
                 }
         )).setWidth("50px");
