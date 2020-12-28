@@ -1,11 +1,13 @@
 package pl.kskowronski.views.workers_suspended;
 
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Input;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -27,6 +29,7 @@ import pl.kskowronski.data.service.MapperDate;
 import pl.kskowronski.data.service.MyIcons;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
+import pl.kskowronski.data.service.inap.ProcessInstanceService;
 import pl.kskowronski.views.main.MainView;
 
 import javax.mail.MessagingException;
@@ -45,6 +48,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
     private NapForeignerLogService napForeignerLogService;
     private WorkerService workerService;
     private MailService mailService;
+    private ProcessInstanceService processInstanceService;
 
     private Grid<NapForeignerLogDTO> gridWorkersSuspended;
 
@@ -56,12 +60,16 @@ public class WorkersSuspendedView extends HorizontalLayout {
 
     private User userLogged;
 
+    Optional<List<NapForeignerLogDTO>> foreigners;
+
     public WorkersSuspendedView(@Autowired NapForeignerLogService napForeignerLogService
                                 , @Autowired WorkerService workerService
+                                , @Autowired ProcessInstanceService processInstanceService
                                 , @Autowired MailService mailService) throws Exception {
         this.napForeignerLogService = napForeignerLogService;
         this.workerService = workerService;
         this.mailService = mailService;
+        this.processInstanceService = processInstanceService;
         setId("workers-to-acceptation-view");
         setHeight("95%");
 
@@ -130,6 +138,33 @@ public class WorkersSuspendedView extends HorizontalLayout {
         gridWorkersSuspended.addColumn("prcName");
         gridWorkersSuspended.addColumn("prcSurname");
 
+        gridWorkersSuspended.addColumn(new NativeButtonRenderer<NapForeignerLogDTO>("Akceptuję",
+                item -> {
+                    Dialog dialog = new Dialog();
+                    dialog.add(new Text("Podaj powód: "));
+                    Input inputReject = new Input();
+                    inputReject.setValue("OK");
+                    Button confirmButton = new Button("Akceptuję", event -> {
+                        workerService.acceptForeignerApplication("Zaakceptowane przez HR (" + userLogged.getUsername() + ")" + inputReject.getValue()
+                                , item.getProcessId());
+                        NapForeignerLog napForeignerLog = new NapForeignerLog();
+                        napForeignerLog.setId(item.getId());
+                        napForeignerLog.setPrcId(item.getPrcId());
+                        napForeignerLog.setStatus(NapForeignerLog.STATUS_ACCEPT);
+                        napForeignerLog.setDescription("Zaakceptowane przez HR (" + userLogged.getUsername() + ")");
+                        napForeignerLog.setWhoDecided(userLogged.getUsername());
+                        napForeignerLog.setWhenDecided(new Date());
+                        napForeignerLog.setProcessId(item.getProcessId());
+                        napForeignerLogService.save(napForeignerLog);
+                        Notification.show("Zaakceptowano process: " + item.getProcessId() + " dla " + item.getPrcSurname(), 3000, Notification.Position.MIDDLE);
+                        this.foreigners.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
+                        this.gridWorkersSuspended.getDataProvider().refreshAll();
+                    });
+                    dialog.add(inputReject, confirmButton);
+                    dialog.open();
+                }
+        )).setWidth("50px");
+
 
         gridWorkersSuspended.addColumn(new NativeButtonRenderer<NapForeignerLogDTO>("Ponowienie",
                 item -> {
@@ -138,8 +173,9 @@ public class WorkersSuspendedView extends HorizontalLayout {
                     //dialog.add(new Text("Wiadomość do " + item.getRunProcess() + "@rekeep.pl od " + userLogged.getUsername() + "@rekeep.pl"));
                     //dialog.add(new Text("Temat: " + topic));
 
-                    String content = "<div><b>Wiadomość do: </b>" //+ item.getRunProcess()
-                            + "@rekeep.pl od " + userLogged.getUsername() + "@rekeep.pl"
+                    String runProcess = processInstanceService.getProcessInstance(item.getProcessId()).get().getRunProcess();
+
+                    String content = "<div><b>Wiadomość do: </b>" + runProcess + "@rekeep.pl od " + userLogged.getUsername() + "@rekeep.pl"
                             + "  <br><b>Temat:</b> " + topic +  "<br><b>Tekst:</b></div>";
                     Html html = new Html(content);
                     dialog.add(html);
@@ -164,8 +200,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
                         Notification.show("Wniosek zawiszony procId: " + item.getProcessId() + " dla " + item.getPrcSurname(), 3000, Notification.Position.MIDDLE);
                         item.setRefresh("N");
                         this.gridWorkersSuspended.getDataProvider().refreshAll();
-                        sendMailTo(//item.getRunProcess()
-                                        "" + "@rekeep.pl"
+                        sendMailTo(runProcess + "@rekeep.pl"
                                 ,userLogged.getUsername() + "@rekeep.pl"
                                 , inputReject.getValue()
                                 , topic );
@@ -187,7 +222,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
 
 
     private void getDataForPeriod() throws Exception {
-        Optional<List<NapForeignerLogDTO>> foreigners = napForeignerLogService.findAllSuspendedForPeriod(textPeriod.getValue());
+        foreigners = napForeignerLogService.findAllSuspendedForPeriod(textPeriod.getValue());
         if (foreigners.get().size() == 0) {
             Notification.show("Brak pozycji do wyświetlenia w danym miesiącu", 3000, Notification.Position.MIDDLE);
         }
