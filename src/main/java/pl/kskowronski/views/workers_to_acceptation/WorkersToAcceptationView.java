@@ -13,6 +13,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
@@ -191,38 +192,44 @@ public class WorkersToAcceptationView extends HorizontalLayout {
 
         gridWorkersToAccept.addColumn(new NativeButtonRenderer<WorkerDTO>("Zawieszam",
                 item -> {
-                    /*Dialog dialog = new Dialog();
-                    dialog.add(new Text("Podaj powód: "));
-                    Input inputReject = new Input();
-                    Button confirmButton = new Button("Odrzucam", event -> {
+                    Dialog dialog = new Dialog();
+                    String topic = "Obcokrajowcy. Wniosek do poprawy "+ item.getPrcNazwisko() + " " + item.getPrcImie() + " ProcId: " + item.getProcesId();
+                    //dialog.add(new Text("Wiadomość do " + item.getRunProcess() + "@rekeep.pl od " + userLogged.getUsername() + "@rekeep.pl"));
+                    //dialog.add(new Text("Temat: " + topic));
+
+                    String content = "<div><b>Wiadomość do: </b>" + item.getRunProcess() + "@rekeep.pl od " + userLogged.getUsername() + "@rekeep.pl"
+                            + "  <br><b>Temat:</b> " + topic +  "<br><b>Tekst:</b></div>";
+                    Html html = new Html(content);
+                    dialog.add(html);
+
+                    HorizontalLayout hl01 = new HorizontalLayout();
+                    TextArea inputReject = new TextArea();
+                    inputReject.setHeight("200px");
+                    inputReject.setWidth("480px");
+                    Button confirmButton = new Button("Zawieszam i wysyłam mail", event -> {
                         workerService.acceptForeignerApplication("Odrzucone przez HR (" + userLogged.getUsername()  +") Powód: " + inputReject.getValue()
                                 , item.getProcesId());
                         NapForeignerLog napForeignerLog = new NapForeignerLog();
                         napForeignerLog.setPrcId(item.getPrcId());
                         napForeignerLog.setStatus(NapForeignerLog.STATUS_SUSPENDED);
-                        napForeignerLog.setDescription("Odrzucone przez HR (" + userLogged.getUsername()  +") Powód: " + inputReject.getValue());
+                        napForeignerLog.setDescription("Zawieszone przez HR (" + userLogged.getUsername()  +")");
                         napForeignerLog.setWhoDecided(userLogged.getUsername());
                         napForeignerLog.setWhenDecided(new Date());
                         napForeignerLog.setProcessId(item.getProcesId());
                         napForeignerLog.setRefresh("N");
                         napForeignerLogService.save(napForeignerLog);
-                        Notification.show("Wnisek zawiszoney procId: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
+                        Notification.show("Wniosek zawiszony procId: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
                         this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
                         this.gridWorkersToAccept.getDataProvider().refreshAll();
+                        sendMailTo(item.getRunProcess() + "@rekeep.pl"
+                                ,userLogged.getUsername() + "@rekeep.pl"
+                                , inputReject.getValue()
+                                , topic );
                         dialog.close();
                     });
-                    dialog.add(inputReject, confirmButton);
-                    dialog.open();*/
-
-
-                    try {
-                        mailService.sendMail("klaudiusz.skowronski@naprzod.pl","claude-plos@o2.pl",
-                                "Test",
-                                "<b>Co tam 100 zł</b><br>:P", true);
-                    } catch (MessagingException e) {
-                        e.printStackTrace();
-                    }
-
+                    hl01.add(inputReject);
+                    dialog.add(hl01,confirmButton);
+                    dialog.open();
                 }
         )).setWidth("50px");
 
@@ -299,6 +306,17 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         }
 
         gridWorkersToAccept.setItems(workers.get());
+    }
+
+
+    private void sendMailTo(String to, String cc, String text, String topic){
+        try {
+            mailService.sendMail(to, cc,
+                    topic ,
+                    "<b>Wiadomość od: " + cc + "</b><br><br> "+ text, true);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 
 
