@@ -1,25 +1,35 @@
 package pl.kskowronski.views.workers_suspended;
 
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.server.VaadinSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
+import pl.kskowronski.data.entity.inap.NapForeignerLog;
 import pl.kskowronski.data.entity.inap.NapForeignerLogDTO;
+import pl.kskowronski.data.entity.inap.User;
+import pl.kskowronski.data.service.MailService;
 import pl.kskowronski.data.service.MapperDate;
 import pl.kskowronski.data.service.MyIcons;
+import pl.kskowronski.data.service.egeria.ek.WorkerService;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
 import pl.kskowronski.views.main.MainView;
 
+import javax.mail.MessagingException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -33,6 +43,8 @@ import java.util.Optional;
 public class WorkersSuspendedView extends HorizontalLayout {
 
     private NapForeignerLogService napForeignerLogService;
+    private WorkerService workerService;
+    private MailService mailService;
 
     private Grid<NapForeignerLogDTO> gridWorkersSuspended;
 
@@ -42,10 +54,19 @@ public class WorkersSuspendedView extends HorizontalLayout {
     private Button butMinus = new Button("-");
     private TextField textPeriod = new TextField("Okres");
 
-    public WorkersSuspendedView(@Autowired NapForeignerLogService napForeignerLogService) throws Exception {
+    private User userLogged;
+
+    public WorkersSuspendedView(@Autowired NapForeignerLogService napForeignerLogService
+                                , @Autowired WorkerService workerService
+                                , @Autowired MailService mailService) throws Exception {
         this.napForeignerLogService = napForeignerLogService;
+        this.workerService = workerService;
+        this.mailService = mailService;
         setId("workers-to-acceptation-view");
         setHeight("95%");
+
+        VaadinSession session = VaadinSession.getCurrent();
+        userLogged = session.getAttribute(User.class);
 
         Date now = Date.from(LocalDate.now().minus(0, ChronoUnit.MONTHS).atStartOfDay(ZoneId.systemDefault()).toInstant());
         textPeriod.setValue(mapperDate.dtYYYYMM.format(now));
@@ -94,6 +115,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
         gridWorkersSuspended.setColumns();
         gridWorkersSuspended.addComponentColumn(item -> createIconTenderType(item)).setHeader("Refresh").setWidth("40px");
 
+        gridWorkersSuspended.addColumn("processId");
         gridWorkersSuspended.addColumn("whenDecided");
         gridWorkersSuspended.addColumn("whoDecided");
         gridWorkersSuspended.addColumn("status");
@@ -107,6 +129,54 @@ public class WorkersSuspendedView extends HorizontalLayout {
         gridWorkersSuspended.addColumn("prcNumber");
         gridWorkersSuspended.addColumn("prcName");
         gridWorkersSuspended.addColumn("prcSurname");
+
+
+        gridWorkersSuspended.addColumn(new NativeButtonRenderer<NapForeignerLogDTO>("Ponowienie",
+                item -> {
+                    Dialog dialog = new Dialog();
+                    String topic = "Obcokrajowcy. Wniosek do poprawy "+ item.getPrcSurname()+ " " + item.getPrcName() + " ProcId: " + item.getProcessId();
+                    //dialog.add(new Text("Wiadomość do " + item.getRunProcess() + "@rekeep.pl od " + userLogged.getUsername() + "@rekeep.pl"));
+                    //dialog.add(new Text("Temat: " + topic));
+
+                    String content = "<div><b>Wiadomość do: </b>" //+ item.getRunProcess()
+                            + "@rekeep.pl od " + userLogged.getUsername() + "@rekeep.pl"
+                            + "  <br><b>Temat:</b> " + topic +  "<br><b>Tekst:</b></div>";
+                    Html html = new Html(content);
+                    dialog.add(html);
+
+                    HorizontalLayout hl01 = new HorizontalLayout();
+                    TextArea inputReject = new TextArea();
+                    inputReject.setHeight("200px");
+                    inputReject.setWidth("480px");
+                    Button confirmButton = new Button("Zawieszam i wysyłam mail", event -> {
+                        workerService.acceptForeignerApplication("Odrzucone przez HR (" + userLogged.getUsername()  +") Powód: " + inputReject.getValue()
+                                , item.getProcessId());
+                        NapForeignerLog napForeignerLog = new NapForeignerLog();
+                        napForeignerLog.setId(item.getId());
+                        napForeignerLog.setPrcId(item.getPrcId());
+                        napForeignerLog.setStatus(NapForeignerLog.STATUS_SUSPENDED);
+                        napForeignerLog.setDescription("Zawieszone przez HR (" + userLogged.getUsername()  +")");
+                        napForeignerLog.setWhoDecided(userLogged.getUsername());
+                        napForeignerLog.setWhenDecided(new Date());
+                        napForeignerLog.setProcessId(item.getProcessId());
+                        napForeignerLog.setRefresh("N");
+                        napForeignerLogService.save(napForeignerLog);
+                        Notification.show("Wniosek zawiszony procId: " + item.getProcessId() + " dla " + item.getPrcSurname(), 3000, Notification.Position.MIDDLE);
+                        item.setRefresh("N");
+                        this.gridWorkersSuspended.getDataProvider().refreshAll();
+                        sendMailTo(//item.getRunProcess()
+                                        "" + "@rekeep.pl"
+                                ,userLogged.getUsername() + "@rekeep.pl"
+                                , inputReject.getValue()
+                                , topic );
+                        dialog.close();
+                    });
+                    hl01.add(inputReject);
+                    dialog.add(hl01,confirmButton);
+                    dialog.open();
+                }
+        )).setWidth("50px");
+
 
         add(gridWorkersSuspended);
 
@@ -134,6 +204,16 @@ public class WorkersSuspendedView extends HorizontalLayout {
             icon = MyIcons.ICON_OK.create();
         }
         return icon;
+    }
+
+    private void sendMailTo(String to, String cc, String text, String topic){
+        try {
+            mailService.sendMail(to, cc,
+                    topic ,
+                    "<b>Wiadomość od: " + cc + "</b><br><br> "+ text, true);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 
 }

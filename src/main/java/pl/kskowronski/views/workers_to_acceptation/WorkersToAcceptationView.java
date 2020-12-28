@@ -106,7 +106,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
 
         getWorkersToAccept(false);
 
-        gridWorkersToAccept.setColumns("status","prcNumer", "prcNazwisko", "prcImie", "prcObywatelstwo");
+        gridWorkersToAccept.setColumns("status","procesId", "prcNumer", "prcNazwisko", "prcImie", "prcObywatelstwo");
 
         gridWorkersToAccept.addColumn("runDate").setWidth("120px");
 
@@ -277,24 +277,6 @@ public class WorkersToAcceptationView extends HorizontalLayout {
             layout.add(gridDocuments);
             return layout;
         }));
-
-
-//        gridWorkerAccept.setItemDetailsRenderer(TemplateRenderer.<WorkerDTO>of(
-//                "<div style='border: 1px solid gray; padding: 10px; width: 100%; box-sizing: border-box;'>"
-//                        + "<div>Hi! My name is <b>[[item.firstName]]!</b></div>"
-//                        + "<div>Test</div>"
-//                        + "</div>")
-//                .withProperty("firstName", WorkerDTO::getPrcNazwisko)
-//                .withEventHandler("handleClick", worker -> {
-////                    Optional<List<DocumentDTO>> documents = documentService.getDocumentForPrc(worker.getPrcId());
-////                    Grid<DocumentDTO> gridDocuments = new Grid<DocumentDTO>();
-////                    gridDocuments.setItems(documents.get());
-////                    add(gridDocuments);
-//                    Notification.show("Tescik");
-//                    gridWorkerAccept.getDataProvider().refreshItem(worker);
-//                }));
-
-
 
         add(gridWorkersToAccept);
     }

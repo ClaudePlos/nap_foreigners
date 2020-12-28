@@ -119,7 +119,7 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
         this.gridWorkersAfterDecision = new Grid<>(NapForeignerLogDTO.class);
         this.gridWorkersAfterDecision.setHeightFull();
 
-        gridWorkersAfterDecision.setColumns("whenDecided", "whoDecided", "status");
+        gridWorkersAfterDecision.setColumns("processId","whenDecided", "whoDecided", "status");
 
 
         gridWorkersAfterDecision.addColumn(TemplateRenderer.<NapForeignerLogDTO>of(
