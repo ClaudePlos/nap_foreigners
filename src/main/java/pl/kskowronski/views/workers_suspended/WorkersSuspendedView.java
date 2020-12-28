@@ -9,6 +9,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Input;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -23,21 +24,21 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.VaadinSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import pl.kskowronski.data.entity.egeria.ek.Occupation;
 import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
-import pl.kskowronski.data.entity.inap.DocumentDTO;
-import pl.kskowronski.data.entity.inap.NapForeignerLog;
-import pl.kskowronski.data.entity.inap.NapForeignerLogDTO;
-import pl.kskowronski.data.entity.inap.User;
+import pl.kskowronski.data.entity.inap.*;
 import pl.kskowronski.data.service.MailService;
 import pl.kskowronski.data.service.MapperDate;
 import pl.kskowronski.data.service.MyIcons;
+import pl.kskowronski.data.service.egeria.css.DictionaryService;
+import pl.kskowronski.data.service.egeria.ek.OccupationRepo;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
-import pl.kskowronski.data.service.inap.DocumentService;
-import pl.kskowronski.data.service.inap.NapForeignerLogService;
-import pl.kskowronski.data.service.inap.ProcessInstanceService;
+import pl.kskowronski.data.service.global.EatFirmaService;
+import pl.kskowronski.data.service.inap.*;
 import pl.kskowronski.views.main.MainView;
 
 import javax.mail.MessagingException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -73,6 +74,11 @@ public class WorkersSuspendedView extends HorizontalLayout {
                                 , @Autowired WorkerService workerService
                                 , @Autowired DocumentService documentService
                                 , @Autowired ProcessInstanceService processInstanceService
+                                , @Autowired RequirementService requirementService
+                                , @Autowired RequirementKeyService requirementKeyService
+                                , @Autowired DictionaryService dictionaryService
+                                , @Autowired EatFirmaService eatFirmaService
+                                , @Autowired OccupationRepo occupationRepo
                                 , @Autowired MailService mailService) throws Exception {
         this.napForeignerLogService = napForeignerLogService;
         this.workerService = workerService;
@@ -147,6 +153,50 @@ public class WorkersSuspendedView extends HorizontalLayout {
         gridWorkersSuspended.addColumn("prcNumber");
         gridWorkersSuspended.addColumn("prcName");
         gridWorkersSuspended.addColumn("prcSurname");
+
+        gridWorkersSuspended.addColumn(new NativeButtonRenderer<NapForeignerLogDTO>("Umowa",
+                item -> {
+
+                    Dialog dialog = new Dialog();
+                    dialog.add(new Html("<b>Szczegóły wniosku:</b>"));
+                    VerticalLayout vertical = new VerticalLayout ();
+                    Optional<Requirement> requirement = requirementService.getRequirementForProcess(item.getProcessId());
+                    dialog.add( " " +  eatFirmaService.findById(requirement.get().getFrmId()).get().getFrmNazwa());
+                    Optional<List<RequirementKey>> requirements = requirementKeyService.getRequirementForProcess(item.getProcessId());
+                    if (requirements.get().size() > 0){
+                        requirements.get().stream().forEach( e -> {
+                                    String num = e.getLiczba() == BigDecimal.ZERO ? "" : e.getLiczba().toString();
+                                    String text = e.getTekst() == null ? "" : e.getTekst();
+                                    String date = mapperDate.dtYYYYMMDD.format(e.getDate()).equals("1970-01-01") ? "" : mapperDate.dtYYYYMMDD.format(e.getDate());
+
+                                    if (e.getType().equals("STN_PRACY")){
+                                        Optional<Occupation> occupation = occupationRepo.findById(e.getLiczba());
+                                        if (occupation.isPresent()){
+                                            text = occupation.get().getStnNazwa();
+                                        }
+                                    }
+
+                                    if (e.getType().equals("PRZEDMIOT_UMOWY")){
+                                        Optional<String> subjectOfTheContract = dictionaryService.getSubjectOfTheContract(text);
+                                        if (subjectOfTheContract.isPresent()){
+                                            text = subjectOfTheContract.get();
+                                        }
+                                    }
+
+                                    Label lab = new Label(e.getType() + ": "+ num + date + text);
+                                    vertical.add(lab);
+                                }
+                        );
+
+                    } else {
+                        Notification.show("Brak informacji odnośnie umowy", 3000, Notification.Position.MIDDLE);
+                    }
+                    dialog.add(vertical);
+                    dialog.setWidth("400px");
+                    dialog.setHeight("300px");
+                    dialog.open();
+                }
+        )).setWidth("50px");
 
         gridWorkersSuspended.addColumn(new NativeButtonRenderer<NapForeignerLogDTO>("Akceptuję",
                 item -> {
