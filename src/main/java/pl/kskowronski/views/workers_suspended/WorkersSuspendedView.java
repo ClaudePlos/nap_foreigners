@@ -2,6 +2,7 @@ package pl.kskowronski.views.workers_suspended;
 
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -10,9 +11,11 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Input;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.PageTitle;
@@ -21,6 +24,7 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.VaadinSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
+import pl.kskowronski.data.entity.inap.DocumentDTO;
 import pl.kskowronski.data.entity.inap.NapForeignerLog;
 import pl.kskowronski.data.entity.inap.NapForeignerLogDTO;
 import pl.kskowronski.data.entity.inap.User;
@@ -28,6 +32,7 @@ import pl.kskowronski.data.service.MailService;
 import pl.kskowronski.data.service.MapperDate;
 import pl.kskowronski.data.service.MyIcons;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
+import pl.kskowronski.data.service.inap.DocumentService;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
 import pl.kskowronski.data.service.inap.ProcessInstanceService;
 import pl.kskowronski.views.main.MainView;
@@ -49,8 +54,10 @@ public class WorkersSuspendedView extends HorizontalLayout {
     private WorkerService workerService;
     private MailService mailService;
     private ProcessInstanceService processInstanceService;
+    private DocumentService documentService;
 
     private Grid<NapForeignerLogDTO> gridWorkersSuspended;
+    private Grid<DocumentDTO> gridDocuments;
 
     private MapperDate mapperDate = new MapperDate();
 
@@ -64,12 +71,14 @@ public class WorkersSuspendedView extends HorizontalLayout {
 
     public WorkersSuspendedView(@Autowired NapForeignerLogService napForeignerLogService
                                 , @Autowired WorkerService workerService
+                                , @Autowired DocumentService documentService
                                 , @Autowired ProcessInstanceService processInstanceService
                                 , @Autowired MailService mailService) throws Exception {
         this.napForeignerLogService = napForeignerLogService;
         this.workerService = workerService;
         this.mailService = mailService;
         this.processInstanceService = processInstanceService;
+        this.documentService = documentService;
         setId("workers-to-acceptation-view");
         setHeight("95%");
 
@@ -118,6 +127,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
 
 
         this.gridWorkersSuspended = new Grid<>(NapForeignerLogDTO.class);
+        this.gridDocuments = new Grid<>(DocumentDTO.class);
         this.gridWorkersSuspended.setHeightFull();
 
         gridWorkersSuspended.setColumns();
@@ -211,6 +221,24 @@ public class WorkersSuspendedView extends HorizontalLayout {
                     dialog.open();
                 }
         )).setWidth("50px");
+
+
+        gridDocuments.setColumns("nazwa", "opis", "frmName");
+
+        gridDocuments.addColumn(new NativeButtonRenderer<DocumentDTO>("PDF",
+                item -> {
+                    String pdfUrl = documentService.generateUrlForPDF(item.getId());
+                    UI.getCurrent().getPage().executeJavaScript("window.open('" + pdfUrl + "','_blank')");    ;
+                }
+        ));
+
+        gridWorkersSuspended.setItemDetailsRenderer(new ComponentRenderer<>(worker -> {
+            VerticalLayout layout = new VerticalLayout();
+            Optional<List<DocumentDTO>> documents = documentService.getDocumentForPrc(worker.getPrcId());
+            gridDocuments.setItems(documents.get());
+            layout.add(gridDocuments);
+            return layout;
+        }));
 
 
         add(gridWorkersSuspended);
