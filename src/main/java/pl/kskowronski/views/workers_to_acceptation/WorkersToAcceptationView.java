@@ -183,6 +183,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         Notification.show("Zaakceptowano process: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
                         this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
                         this.gridWorkersToAccept.getDataProvider().refreshAll();
+                        dialog.close();
                     });
                     dialog.add(inputReject, confirmButton);
                     dialog.open();

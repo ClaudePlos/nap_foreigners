@@ -219,6 +219,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
                         Notification.show("Zaakceptowano process: " + item.getProcessId() + " dla " + item.getPrcSurname(), 3000, Notification.Position.MIDDLE);
                         this.foreigners.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
                         this.gridWorkersSuspended.getDataProvider().refreshAll();
+                        dialog.close();
                     });
                     dialog.add(inputReject, confirmButton);
                     dialog.open();
