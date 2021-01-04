@@ -9,9 +9,10 @@ import java.util.Date;
 @Table(name = "NAP_FOREIGNERS_LOG")
 public class NapForeignerLog {
 
-    public static String STATUS_ACCEPT = "ZAAKCEPTOWANE" ;
-    public static String STATUS_NO_ACCEPT = "ODRZUCONE" ;
-    public static String STATUS_SUSPENDED = "ZAWIESZONE" ;
+    public static String STATUS_ACCEPT = "ZAAKCEPTOWANE";
+    public static String STATUS_NO_ACCEPT = "ODRZUCONE";
+    public static String STATUS_SUSPENDED = "ZAWIESZONE";
+    public static String STATUS_REMOVED = "USUNIETO" ;
 
     @Id
     @Column(name = "ID")

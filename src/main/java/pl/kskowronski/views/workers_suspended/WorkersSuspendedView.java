@@ -205,18 +205,9 @@ public class WorkersSuspendedView extends HorizontalLayout {
                     Input inputReject = new Input();
                     inputReject.setValue("OK");
                     Button confirmButton = new Button("Akceptuję", event -> {
-                        workerService.acceptForeignerApplication("Zaakceptowane przez HR (" + userLogged.getUsername() + ")" + inputReject.getValue()
-                                , item.getProcessId());
-                        NapForeignerLog napForeignerLog = new NapForeignerLog();
-                        napForeignerLog.setId(item.getId());
-                        napForeignerLog.setPrcId(item.getPrcId());
-                        napForeignerLog.setStatus(NapForeignerLog.STATUS_ACCEPT);
-                        napForeignerLog.setDescription("Zaakceptowane przez HR (" + userLogged.getUsername() + ")");
-                        napForeignerLog.setWhoDecided(userLogged.getUsername());
-                        napForeignerLog.setWhenDecided(new Date());
-                        napForeignerLog.setProcessId(item.getProcessId());
-                        napForeignerLogService.save(napForeignerLog);
-                        Notification.show("Zaakceptowano process: " + item.getProcessId() + " dla " + item.getPrcSurname(), 3000, Notification.Position.MIDDLE);
+                        String status = "Zaakceptowano";
+                        changeStatus(item, status, NapForeignerLog.STATUS_ACCEPT,  inputReject.getValue());
+                        Notification.show(status + " process: " + item.getProcessId() + " dla " + item.getPrcSurname(), 3000, Notification.Position.MIDDLE);
                         this.foreigners.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
                         this.gridWorkersSuspended.getDataProvider().refreshAll();
                         dialog.close();
@@ -269,6 +260,25 @@ public class WorkersSuspendedView extends HorizontalLayout {
                     });
                     hl01.add(inputReject);
                     dialog.add(hl01,confirmButton);
+                    dialog.open();
+                }
+        )).setWidth("50px");
+
+        gridWorkersSuspended.addColumn(new NativeButtonRenderer<NapForeignerLogDTO>("Usuń",
+                item -> {
+                    Dialog dialog = new Dialog();
+                    dialog.add(new Text("Podaj powód: "));
+                    Input inputReject = new Input();
+                    inputReject.setValue("OK");
+                    Button confirmButton = new Button("Usuń", event -> {
+                        String status = "Usunięto";
+                        changeStatus(item, status, NapForeignerLog.STATUS_REMOVED,  inputReject.getValue());
+                        Notification.show(status + " process: " + item.getProcessId() + " dla " + item.getPrcSurname(), 3000, Notification.Position.MIDDLE);
+                        this.foreigners.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
+                        this.gridWorkersSuspended.getDataProvider().refreshAll();
+                        dialog.close();
+                    });
+                    dialog.add(inputReject, confirmButton);
                     dialog.open();
                 }
         )).setWidth("50px");
@@ -328,6 +338,21 @@ public class WorkersSuspendedView extends HorizontalLayout {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+
+
+    private void changeStatus( NapForeignerLogDTO item, String status,  String descStatus, String dialog){
+        workerService.acceptForeignerApplication(descStatus + " przez HR (" + userLogged.getUsername() + ")" + dialog
+                , item.getProcessId());
+        NapForeignerLog napForeignerLog = new NapForeignerLog();
+        napForeignerLog.setId(item.getId());
+        napForeignerLog.setPrcId(item.getPrcId());
+        napForeignerLog.setStatus(status);
+        napForeignerLog.setDescription( descStatus + " przez HR (" + userLogged.getUsername() + ")");
+        napForeignerLog.setWhoDecided(userLogged.getUsername());
+        napForeignerLog.setWhenDecided(new Date());
+        napForeignerLog.setProcessId(item.getProcessId());
+        napForeignerLogService.save(napForeignerLog);
     }
 
 }
