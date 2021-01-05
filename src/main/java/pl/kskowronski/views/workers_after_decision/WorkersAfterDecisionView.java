@@ -7,28 +7,26 @@ import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.kskowronski.data.entity.egeria.ckk.Address;
-import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
 import pl.kskowronski.data.entity.global.EatFirma;
-import pl.kskowronski.data.entity.inap.NapForeignerLog;
 import pl.kskowronski.data.entity.inap.NapForeignerLogDTO;
 import pl.kskowronski.data.entity.inap.Requirement;
 import pl.kskowronski.data.service.MapperDate;
-import pl.kskowronski.data.service.egeria.ckk.AddressRepo;
 import pl.kskowronski.data.service.egeria.ckk.AddressService;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
 import pl.kskowronski.data.service.global.EatFirmaService;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
 import pl.kskowronski.data.service.inap.RequirementKeyService;
 import pl.kskowronski.data.service.inap.RequirementService;
+import pl.kskowronski.views.component.ContractDialog;
 import pl.kskowronski.views.main.MainView;
 
 import java.math.BigDecimal;
@@ -51,6 +49,9 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
     private WorkerService workerService;
     private RequirementService requirementService;
     private RequirementKeyService requirementKeyService;
+
+    @Autowired
+    ContractDialog contractDialog;
 
     private Grid<NapForeignerLogDTO> gridWorkersAfterDecision;
 
@@ -130,6 +131,16 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
         gridWorkersAfterDecision.addColumn("prcNumber");
         gridWorkersAfterDecision.addColumn("prcName");
         gridWorkersAfterDecision.addColumn("prcSurname");
+
+        gridWorkersAfterDecision.addColumn(new NativeButtonRenderer<NapForeignerLogDTO>("Um",
+                item -> {
+                    VerticalLayout vertical = new VerticalLayout ();
+                    contractDialog.openContract(item);
+                    contractDialog.add(vertical);
+                    contractDialog.setWidth("400px");
+                    contractDialog.setHeight("300px");
+                    contractDialog.open();
+                })).setWidth("30px");
 
         gridWorkersAfterDecision.addColumn(new NativeButtonRenderer<NapForeignerLogDTO>("Powiadomienie",
                 item -> {

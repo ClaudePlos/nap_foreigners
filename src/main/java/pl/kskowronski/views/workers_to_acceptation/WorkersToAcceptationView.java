@@ -38,6 +38,7 @@ import pl.kskowronski.data.service.inap.DocumentService;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
 import pl.kskowronski.data.service.inap.RequirementKeyService;
 import pl.kskowronski.data.service.inap.RequirementService;
+import pl.kskowronski.views.component.ContractDialog;
 import pl.kskowronski.views.main.MainView;
 import com.vaadin.flow.router.RouteAlias;
 
@@ -61,6 +62,9 @@ public class WorkersToAcceptationView extends HorizontalLayout {
     DictionaryService dictionaryService;
     MailService mailService;
 
+    @Autowired
+    ContractDialog contractDialog;
+
     private Grid<WorkerDTO> gridWorkersToAccept;
     private Grid<DocumentDTO> gridDocuments;
 
@@ -75,11 +79,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
             , @Autowired MailService mailService
             , @Autowired ForeignerService foreignerService
             , @Autowired DocumentService documentService
-            , @Autowired NapForeignerLogService napForeignerLogService
-            , @Autowired RequirementKeyService requirementKeyService
-            , @Autowired RequirementService requirementService
-            , @Autowired EatFirmaService eatFirmaService
-            , @Autowired OccupationRepo occupationRepo) {
+            , @Autowired NapForeignerLogService napForeignerLogService) {
         this.foreignerService = foreignerService;
         this.workerService = workerService;
         this.documentService = documentService;
@@ -121,45 +121,12 @@ public class WorkersToAcceptationView extends HorizontalLayout {
 
         gridWorkersToAccept.addColumn(new NativeButtonRenderer<WorkerDTO>("Umowa",
                 item -> {
-
-                    Dialog dialog = new Dialog();
-                    dialog.add(new Html("<b>Szczegóły wniosku:</b>"));
                     VerticalLayout vertical = new VerticalLayout ();
-                    Optional<Requirement> requirement = requirementService.getRequirementForProcess(item.getProcesId());
-                    dialog.add( " " +  eatFirmaService.findById(requirement.get().getFrmId()).get().getFrmNazwa());
-                    Optional<List<RequirementKey>> requirements = requirementKeyService.getRequirementForProcess(item.getProcesId());
-                    if (requirements.get().size() > 0){
-                        requirements.get().stream().forEach( e -> {
-                                    String num = e.getLiczba() == BigDecimal.ZERO ? "" : e.getLiczba().toString();
-                                    String text = e.getTekst() == null ? "" : e.getTekst();
-                                    String date = mapperDate.dtYYYYMMDD.format(e.getDate()).equals("1970-01-01") ? "" : mapperDate.dtYYYYMMDD.format(e.getDate());
-
-                                    if (e.getType().equals("STN_PRACY")){
-                                        Optional<Occupation> occupation = occupationRepo.findById(e.getLiczba());
-                                        if (occupation.isPresent()){
-                                            text = occupation.get().getStnNazwa();
-                                        }
-                                    }
-
-                                    if (e.getType().equals("PRZEDMIOT_UMOWY")){
-                                        Optional<String> subjectOfTheContract = dictionaryService.getSubjectOfTheContract(text);
-                                        if (subjectOfTheContract.isPresent()){
-                                            text = subjectOfTheContract.get();
-                                        }
-                                    }
-
-                                    Label lab = new Label(e.getType() + ": "+ num + date + text);
-                                    vertical.add(lab);
-                                }
-                        );
-
-                    } else {
-                        Notification.show("Brak informacji odnośnie umowy", 3000, Notification.Position.MIDDLE);
-                    }
-                    dialog.add(vertical);
-                    dialog.setWidth("400px");
-                    dialog.setHeight("300px");
-                    dialog.open();
+                    contractDialog.openContract(item);
+                    contractDialog.add(vertical);
+                    contractDialog.setWidth("400px");
+                    contractDialog.setHeight("300px");
+                    contractDialog.open();
                 }
         )).setWidth("50px");
 

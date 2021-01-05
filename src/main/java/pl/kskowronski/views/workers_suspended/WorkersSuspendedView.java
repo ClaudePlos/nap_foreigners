@@ -35,6 +35,7 @@ import pl.kskowronski.data.service.egeria.ek.OccupationRepo;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
 import pl.kskowronski.data.service.global.EatFirmaService;
 import pl.kskowronski.data.service.inap.*;
+import pl.kskowronski.views.component.ContractDialog;
 import pl.kskowronski.views.main.MainView;
 
 import javax.mail.MessagingException;
@@ -54,8 +55,6 @@ public class WorkersSuspendedView extends HorizontalLayout {
     private NapForeignerLogService napForeignerLogService;
     private WorkerService workerService;
     private MailService mailService;
-    private ProcessInstanceService processInstanceService;
-    private DocumentService documentService;
 
     private Grid<NapForeignerLogDTO> gridWorkersSuspended;
     private Grid<DocumentDTO> gridDocuments;
@@ -68,23 +67,19 @@ public class WorkersSuspendedView extends HorizontalLayout {
 
     private User userLogged;
 
+    @Autowired
+    ContractDialog contractDialog;
+
     Optional<List<NapForeignerLogDTO>> foreigners;
 
     public WorkersSuspendedView(@Autowired NapForeignerLogService napForeignerLogService
                                 , @Autowired WorkerService workerService
                                 , @Autowired DocumentService documentService
                                 , @Autowired ProcessInstanceService processInstanceService
-                                , @Autowired RequirementService requirementService
-                                , @Autowired RequirementKeyService requirementKeyService
-                                , @Autowired DictionaryService dictionaryService
-                                , @Autowired EatFirmaService eatFirmaService
-                                , @Autowired OccupationRepo occupationRepo
                                 , @Autowired MailService mailService) throws Exception {
         this.napForeignerLogService = napForeignerLogService;
         this.workerService = workerService;
         this.mailService = mailService;
-        this.processInstanceService = processInstanceService;
-        this.documentService = documentService;
         setId("workers-to-acceptation-view");
         setHeight("95%");
 
@@ -154,51 +149,18 @@ public class WorkersSuspendedView extends HorizontalLayout {
         gridWorkersSuspended.addColumn("prcName");
         gridWorkersSuspended.addColumn("prcSurname");
 
-        gridWorkersSuspended.addColumn(new NativeButtonRenderer<NapForeignerLogDTO>("Umowa",
+        gridWorkersSuspended.addColumn(new NativeButtonRenderer<NapForeignerLogDTO>("Um",
                 item -> {
-
-                    Dialog dialog = new Dialog();
-                    dialog.add(new Html("<b>Szczegóły wniosku:</b>"));
                     VerticalLayout vertical = new VerticalLayout ();
-                    Optional<Requirement> requirement = requirementService.getRequirementForProcess(item.getProcessId());
-                    dialog.add( " " +  eatFirmaService.findById(requirement.get().getFrmId()).get().getFrmNazwa());
-                    Optional<List<RequirementKey>> requirements = requirementKeyService.getRequirementForProcess(item.getProcessId());
-                    if (requirements.get().size() > 0){
-                        requirements.get().stream().forEach( e -> {
-                                    String num = e.getLiczba() == BigDecimal.ZERO ? "" : e.getLiczba().toString();
-                                    String text = e.getTekst() == null ? "" : e.getTekst();
-                                    String date = mapperDate.dtYYYYMMDD.format(e.getDate()).equals("1970-01-01") ? "" : mapperDate.dtYYYYMMDD.format(e.getDate());
-
-                                    if (e.getType().equals("STN_PRACY")){
-                                        Optional<Occupation> occupation = occupationRepo.findById(e.getLiczba());
-                                        if (occupation.isPresent()){
-                                            text = occupation.get().getStnNazwa();
-                                        }
-                                    }
-
-                                    if (e.getType().equals("PRZEDMIOT_UMOWY")){
-                                        Optional<String> subjectOfTheContract = dictionaryService.getSubjectOfTheContract(text);
-                                        if (subjectOfTheContract.isPresent()){
-                                            text = subjectOfTheContract.get();
-                                        }
-                                    }
-
-                                    Label lab = new Label(e.getType() + ": "+ num + date + text);
-                                    vertical.add(lab);
-                                }
-                        );
-
-                    } else {
-                        Notification.show("Brak informacji odnośnie umowy", 3000, Notification.Position.MIDDLE);
-                    }
-                    dialog.add(vertical);
-                    dialog.setWidth("400px");
-                    dialog.setHeight("300px");
-                    dialog.open();
+                    contractDialog.openContract(item);
+                    contractDialog.add(vertical);
+                    contractDialog.setWidth("400px");
+                    contractDialog.setHeight("300px");
+                    contractDialog.open();
                 }
-        )).setWidth("50px");
+        )).setWidth("30px");
 
-        gridWorkersSuspended.addColumn(new NativeButtonRenderer<NapForeignerLogDTO>("Akceptuję",
+        gridWorkersSuspended.addColumn(new NativeButtonRenderer<NapForeignerLogDTO>("Akc",
                 item -> {
                     Dialog dialog = new Dialog();
                     dialog.add(new Text("Podaj powód: "));
