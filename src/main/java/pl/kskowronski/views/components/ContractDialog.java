@@ -1,4 +1,4 @@
-package pl.kskowronski.views.component;
+package pl.kskowronski.views.components;
 
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
@@ -6,9 +6,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
-import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.kskowronski.data.entity.egeria.ek.Occupation;

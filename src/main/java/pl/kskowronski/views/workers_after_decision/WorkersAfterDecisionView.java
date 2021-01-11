@@ -26,7 +26,7 @@ import pl.kskowronski.data.service.global.EatFirmaService;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
 import pl.kskowronski.data.service.inap.RequirementKeyService;
 import pl.kskowronski.data.service.inap.RequirementService;
-import pl.kskowronski.views.component.ContractDialog;
+import pl.kskowronski.views.components.ContractDialog;
 import pl.kskowronski.views.main.MainView;
 
 import java.math.BigDecimal;
