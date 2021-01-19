@@ -164,7 +164,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                     inputReject.setHeight("200px");
                     inputReject.setWidth("480px");
                     Button confirmButton = new Button("Zawieszam i wysyłam mail", event -> {
-                        workerService.acceptForeignerApplication("Odrzucone przez HR (" + userLogged.getUsername()  +") Powód: " + inputReject.getValue()
+                        workerService.acceptForeignerApplication("Zawieszone przez HR (" + userLogged.getUsername()  +") Powód: " + inputReject.getValue()
                                 , item.getProcesId());
                         NapForeignerLog napForeignerLog = new NapForeignerLog();
                         napForeignerLog.setPrcId(item.getPrcId());
