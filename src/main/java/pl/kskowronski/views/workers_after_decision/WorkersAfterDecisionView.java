@@ -5,6 +5,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -12,10 +13,12 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.kskowronski.data.entity.egeria.ckk.Address;
+import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
 import pl.kskowronski.data.entity.global.EatFirma;
 import pl.kskowronski.data.entity.inap.NapForeignerLogDTO;
 import pl.kskowronski.data.entity.inap.Requirement;
@@ -36,6 +39,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Route(value = "after_decision", layout = MainView.class)
 @PageTitle("after decision")
@@ -60,6 +64,11 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
     private Button butPlus = new Button("+");
     private Button butMinus = new Button("-");
     private TextField textPeriod = new TextField("Okres");
+
+    Optional<List<NapForeignerLogDTO>> foreigners = Optional.empty();
+
+    private TextField filterText = new TextField();
+    private Label labSizeRowGrid = new Label("0");
 
     public WorkersAfterDecisionView(@Autowired NapForeignerLogService napForeignerLogService
             , @Autowired AddressService addressService
@@ -114,7 +123,12 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
                 e.printStackTrace();
             }
         });
-        add(butMinus, textPeriod, butPlus);
+
+        filterText.setPlaceholder("Search...");
+        filterText.setClearButtonVisible(true);
+        filterText.setValueChangeMode(ValueChangeMode.EAGER);
+        filterText.addValueChangeListener(e -> updateList());
+        add(butMinus, textPeriod, butPlus, filterText, new Label("Ilość wierszy: "), labSizeRowGrid);
 
 
         this.gridWorkersAfterDecision = new Grid<>(NapForeignerLogDTO.class);
@@ -157,7 +171,7 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
 
 
     private void getDataForPeriod() throws Exception {
-        Optional<List<NapForeignerLogDTO>> foreigners = napForeignerLogService.findAllAcceptAndDelForPeriod(textPeriod.getValue());
+        foreigners = napForeignerLogService.findAllAcceptAndDelForPeriod(textPeriod.getValue());
         if (foreigners.get().size() == 0) {
             Notification.show("Brak pozycji do wyświetlenia w danym miesiącu", 3000, Notification.Position.MIDDLE);
         }
@@ -193,6 +207,17 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
         , mapperDate.dtDDMMYYYY.format(workerBirthDate)
         , startDate);
 
+    }
+
+    private void updateList() {
+        List<NapForeignerLogDTO> foreignersDTO = foreigners.get().stream()
+                .filter(item -> item.getPrcSurname().toUpperCase().contains(filterText.getValue().toUpperCase())
+                        || item.getPrcName().toUpperCase().contains(filterText.getValue().toUpperCase())
+
+                )
+                .collect(Collectors.toList());
+        gridWorkersAfterDecision.setItems(foreignersDTO);
+        labSizeRowGrid.setText(String.valueOf(foreignersDTO.size()));
     }
 
 }
