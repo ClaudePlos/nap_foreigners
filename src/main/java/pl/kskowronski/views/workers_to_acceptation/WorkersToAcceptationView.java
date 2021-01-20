@@ -9,13 +9,16 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Input;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
@@ -37,6 +40,7 @@ import javax.mail.MessagingException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Route(value = "to_acceptation", layout = MainView.class)
 @PageTitle("workers to acceptation")
@@ -62,6 +66,9 @@ public class WorkersToAcceptationView extends HorizontalLayout {
     private User userLogged;
 
     private MapperDate mapperDate = new MapperDate();
+
+    private TextField filterText = new TextField();
+    private Label labSizeRowGrid = new Label("0");
 
     public WorkersToAcceptationView(@Autowired WorkerService workerService
             , @Autowired DictionaryService dictionaryService
@@ -94,6 +101,12 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         this.gridWorkersToAccept.setSelectionMode(Grid.SelectionMode.NONE);
 
         getWorkersToAccept(false);
+
+        filterText.setPlaceholder("Search...");
+        filterText.setClearButtonVisible(true);
+        filterText.setValueChangeMode(ValueChangeMode.EAGER);
+        filterText.addValueChangeListener(e -> updateList());
+        add(filterText, new Label("Ilość wierszy: "), labSizeRowGrid);
 
         gridWorkersToAccept.setColumns("status","procesId", "prcNumer", "prcNazwisko", "prcImie", "prcObywatelstwo");
 
@@ -140,6 +153,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
                         this.gridWorkersToAccept.getDataProvider().refreshAll();
                         dialog.close();
+                        refreshNumSize();
                     });
                     dialog.add(inputReject, confirmButton);
                     dialog.open();
@@ -183,6 +197,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                                 , inputReject.getValue()
                                 , topic );
                         dialog.close();
+                        refreshNumSize();
                     });
                     hl01.add(inputReject);
                     dialog.add(hl01,confirmButton);
@@ -212,6 +227,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
                         this.gridWorkersToAccept.getDataProvider().refreshAll();
                         dialog.close();
+                        refreshNumSize();
                     });
                     dialog.add(inputReject, confirmButton);
                     dialog.open();
@@ -245,6 +261,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         }
 
         gridWorkersToAccept.setItems(workers.get());
+        refreshNumSize();
     }
 
 
@@ -258,6 +275,19 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         }
     }
 
+    private void updateList() {
+        List<WorkerDTO> workersDTO = workers.get().stream()
+                .filter(item -> item.getPrcNazwisko().toUpperCase().contains(filterText.getValue().toUpperCase())
+                        || item.getPrcImie().toUpperCase().contains(filterText.getValue().toUpperCase())
+                        || item.getRunProcess().toUpperCase().contains(filterText.getValue().toUpperCase())
+                )
+                .collect(Collectors.toList());
+        gridWorkersToAccept.setItems(workersDTO);
+        labSizeRowGrid.setText(String.valueOf(workersDTO.size()));
+    }
 
+    private void refreshNumSize(){
+        labSizeRowGrid.setText(String.valueOf(workers.get().size()));
+    }
 
 }

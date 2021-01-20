@@ -176,6 +176,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
                         this.foreigners.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
                         this.gridWorkersSuspended.getDataProvider().refreshAll();
                         dialog.close();
+                        refreshNumSize();
                     });
                     dialog.add(inputReject, confirmButton);
                     dialog.open();
@@ -242,6 +243,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
                         this.foreigners.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
                         this.gridWorkersSuspended.getDataProvider().refreshAll();
                         dialog.close();
+                        refreshNumSize();
                     });
                     dialog.add(inputReject, confirmButton);
                     dialog.open();
@@ -328,6 +330,10 @@ public class WorkersSuspendedView extends HorizontalLayout {
                 .collect(Collectors.toList());
         gridWorkersSuspended.setItems(foreignersFilter);
         labSizeRowGrid.setText(String.valueOf(foreignersFilter.size()));
+    }
+
+    private void refreshNumSize(){
+        labSizeRowGrid.setText(String.valueOf(foreigners.get().size()));
     }
 
 }
