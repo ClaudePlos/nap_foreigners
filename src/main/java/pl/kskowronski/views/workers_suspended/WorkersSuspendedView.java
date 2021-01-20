@@ -9,6 +9,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Input;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -18,6 +19,7 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
@@ -38,6 +40,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Route(value = "suspended", layout = MainView.class)
 @PageTitle("workers suspended")
@@ -64,6 +67,9 @@ public class WorkersSuspendedView extends HorizontalLayout {
 
     Optional<List<NapForeignerLogDTO>> foreigners;
 
+    private TextField filterText = new TextField();
+    private Label  labSizeRowGrid = new Label("0");
+
     public WorkersSuspendedView(@Autowired NapForeignerLogService napForeignerLogService
                                 , @Autowired WorkerService workerService
                                 , @Autowired DocumentService documentService
@@ -74,6 +80,11 @@ public class WorkersSuspendedView extends HorizontalLayout {
         this.mailService = mailService;
         setId("workers-to-acceptation-view");
         setHeight("95%");
+
+        filterText.setPlaceholder("Search surname...");
+        filterText.setClearButtonVisible(true);
+        filterText.setValueChangeMode(ValueChangeMode.EAGER);
+        filterText.addValueChangeListener(e -> updateList());
 
         VaadinSession session = VaadinSession.getCurrent();
         userLogged = session.getAttribute(User.class);
@@ -116,7 +127,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
                 e.printStackTrace();
             }
         });
-        add(butMinus, textPeriod, butPlus);
+        add(butMinus, textPeriod, butPlus, filterText, new Label("Ilość wierszy: "), labSizeRowGrid);
 
 
         this.gridWorkersSuspended = new Grid<>(NapForeignerLogDTO.class);
@@ -159,9 +170,9 @@ public class WorkersSuspendedView extends HorizontalLayout {
                     Input inputReject = new Input();
                     inputReject.setValue("OK");
                     Button confirmButton = new Button("Akceptuję", event -> {
-                        String status = "Zaakceptowano";
-                        changeStatus(item, status, NapForeignerLog.STATUS_ACCEPT,  inputReject.getValue());
-                        Notification.show(status + " process: " + item.getProcessId() + " dla " + item.getPrcSurname(), 3000, Notification.Position.MIDDLE);
+                        String statusDesc = "Zaakceptowano";
+                        changeStatus(item, NapForeignerLog.STATUS_ACCEPT, statusDesc,  inputReject.getValue());
+                        Notification.show(statusDesc + " process: " + item.getProcessId() + " dla " + item.getPrcSurname(), 3000, Notification.Position.MIDDLE);
                         this.foreigners.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
                         this.gridWorkersSuspended.getDataProvider().refreshAll();
                         dialog.close();
@@ -225,9 +236,9 @@ public class WorkersSuspendedView extends HorizontalLayout {
                     Input inputReject = new Input();
                     inputReject.setValue("OK");
                     Button confirmButton = new Button("Usuń", event -> {
-                        String status = "Usunięto";
-                        changeStatus(item, status, NapForeignerLog.STATUS_REMOVED,  inputReject.getValue());
-                        Notification.show(status + " process: " + item.getProcessId() + " dla " + item.getPrcSurname(), 3000, Notification.Position.MIDDLE);
+                        String statusDesc = "Usunięto";
+                        changeStatus(item, NapForeignerLog.STATUS_REMOVED, statusDesc, inputReject.getValue());
+                        Notification.show(statusDesc + " process: " + item.getProcessId() + " dla " + item.getPrcSurname(), 3000, Notification.Position.MIDDLE);
                         this.foreigners.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
                         this.gridWorkersSuspended.getDataProvider().refreshAll();
                         dialog.close();
@@ -270,6 +281,8 @@ public class WorkersSuspendedView extends HorizontalLayout {
             Notification.show("Brak pozycji do wyświetlenia w danym miesiącu", 3000, Notification.Position.MIDDLE);
         }
         gridWorkersSuspended.setItems(foreigners.get());
+        labSizeRowGrid.setText(String.valueOf(foreigners.get().size()));
+        filterText.setValue("");
     }
 
 
@@ -307,6 +320,14 @@ public class WorkersSuspendedView extends HorizontalLayout {
         napForeignerLog.setWhenDecided(new Date());
         napForeignerLog.setProcessId(item.getProcessId());
         napForeignerLogService.save(napForeignerLog);
+    }
+
+    public void updateList() {
+        List<NapForeignerLogDTO> foreignersFilter = foreigners.get().stream()
+                .filter(item -> item.getPrcSurname().toUpperCase().contains(filterText.getValue().toUpperCase()))
+                .collect(Collectors.toList());
+        gridWorkersSuspended.setItems(foreignersFilter);
+        labSizeRowGrid.setText(String.valueOf(foreignersFilter.size()));
     }
 
 }
