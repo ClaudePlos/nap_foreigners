@@ -239,7 +239,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         gridDocuments.addColumn(new NativeButtonRenderer<DocumentDTO>("PDF",
                 item -> {
                     String pdfUrl = documentService.generateUrlForPDF(item.getId());
-                    UI.getCurrent().getPage().executeJavaScript("window.open('" + pdfUrl + "','_blank')");    ;
+                    UI.getCurrent().getPage().executeJavaScript("window.open('" + pdfUrl + "','_blank')");
                 }
         ));
 

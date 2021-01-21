@@ -11,6 +11,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
@@ -20,12 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import pl.kskowronski.data.entity.egeria.ckk.Address;
 import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
 import pl.kskowronski.data.entity.global.EatFirma;
+import pl.kskowronski.data.entity.inap.DocumentDTO;
 import pl.kskowronski.data.entity.inap.NapForeignerLogDTO;
 import pl.kskowronski.data.entity.inap.Requirement;
 import pl.kskowronski.data.service.MapperDate;
 import pl.kskowronski.data.service.egeria.ckk.AddressService;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
 import pl.kskowronski.data.service.global.EatFirmaService;
+import pl.kskowronski.data.service.inap.DocumentService;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
 import pl.kskowronski.data.service.inap.RequirementKeyService;
 import pl.kskowronski.data.service.inap.RequirementService;
@@ -53,11 +56,13 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
     private WorkerService workerService;
     private RequirementService requirementService;
     private RequirementKeyService requirementKeyService;
+    private DocumentService documentService;
 
     @Autowired
     ContractDialog contractDialog;
 
     private Grid<NapForeignerLogDTO> gridWorkersAfterDecision;
+    private Grid<DocumentDTO> gridDocuments;
 
     private MapperDate mapperDate = new MapperDate();
 
@@ -72,6 +77,7 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
 
     public WorkersAfterDecisionView(@Autowired NapForeignerLogService napForeignerLogService
             , @Autowired AddressService addressService
+            , @Autowired DocumentService documentService
             , @Autowired WorkerService workerService
             , @Autowired RequirementService requirementService
             , @Autowired RequirementKeyService requirementKeyService
@@ -82,6 +88,7 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
         this.workerService = workerService;
         this.requirementService = requirementService;
         this.requirementKeyService = requirementKeyService;
+        this.documentService = documentService;
         setId("workers-to-acceptation-view");
         setHeight("95%");
 
@@ -132,6 +139,7 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
 
 
         this.gridWorkersAfterDecision = new Grid<>(NapForeignerLogDTO.class);
+        this.gridDocuments = new Grid<>(DocumentDTO.class);
         this.gridWorkersAfterDecision.setHeightFull();
 
         gridWorkersAfterDecision.setColumns("processId","whenDecided", "whoDecided", "status");
@@ -165,6 +173,23 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
 
                 }));
 
+        gridDocuments.setColumns("nazwa", "opis", "frmName");
+
+        gridDocuments.addColumn(new NativeButtonRenderer<DocumentDTO>("PDF",
+                item -> {
+                    String pdfUrl = documentService.generateUrlForPDF(item.getId());
+                    UI.getCurrent().getPage().executeJavaScript("window.open('" + pdfUrl + "','_blank')");
+                }
+        ));
+
+        gridWorkersAfterDecision.setItemDetailsRenderer(new ComponentRenderer<>(worker -> {
+            VerticalLayout layout = new VerticalLayout();
+            Optional<List<DocumentDTO>> documents = documentService.getDocumentForPrc(worker.getPrcId());
+            gridDocuments.setItems(documents.get());
+            layout.add(gridDocuments);
+            return layout;
+        }));
+
         add(gridWorkersAfterDecision);
         getDataForPeriod();
     }
@@ -176,6 +201,7 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
             Notification.show("Brak pozycji do wyświetlenia w danym miesiącu", 3000, Notification.Position.MIDDLE);
         }
         gridWorkersAfterDecision.setItems(foreigners.get());
+        labSizeRowGrid.setText(String.valueOf(foreigners.get().size()));
     }
 
     private void GenerateNotificationPDF(BigDecimal prcId, BigDecimal processId, String prcName, String prcSurname, BigDecimal prcNumber, String dateNow){
@@ -213,7 +239,8 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
         List<NapForeignerLogDTO> foreignersDTO = foreigners.get().stream()
                 .filter(item -> item.getPrcSurname().toUpperCase().contains(filterText.getValue().toUpperCase())
                         || item.getPrcName().toUpperCase().contains(filterText.getValue().toUpperCase())
-
+                        || item.getWhoDecided().toUpperCase().contains(filterText.getValue().toUpperCase())
+                        || item.getStatus().toUpperCase().contains(filterText.getValue().toUpperCase())
                 )
                 .collect(Collectors.toList());
         gridWorkersAfterDecision.setItems(foreignersDTO);
