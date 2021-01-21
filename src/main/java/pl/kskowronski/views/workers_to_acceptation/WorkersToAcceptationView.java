@@ -280,6 +280,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                 .filter(item -> item.getPrcNazwisko().toUpperCase().contains(filterText.getValue().toUpperCase())
                         || item.getPrcImie().toUpperCase().contains(filterText.getValue().toUpperCase())
                         || item.getRunProcess().toUpperCase().contains(filterText.getValue().toUpperCase())
+                        || item.getProcesId().toString().contains(filterText.getValue().toUpperCase())
                 )
                 .collect(Collectors.toList());
         gridWorkersToAccept.setItems(workersDTO);

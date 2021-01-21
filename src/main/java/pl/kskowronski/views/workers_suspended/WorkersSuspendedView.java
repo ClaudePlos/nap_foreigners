@@ -81,7 +81,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
         setId("workers-to-acceptation-view");
         setHeight("95%");
 
-        filterText.setPlaceholder("Search surname...");
+        filterText.setPlaceholder("Search...");
         filterText.setClearButtonVisible(true);
         filterText.setValueChangeMode(ValueChangeMode.EAGER);
         filterText.addValueChangeListener(e -> updateList());
@@ -326,7 +326,11 @@ public class WorkersSuspendedView extends HorizontalLayout {
 
     public void updateList() {
         List<NapForeignerLogDTO> foreignersFilter = foreigners.get().stream()
-                .filter(item -> item.getPrcSurname().toUpperCase().contains(filterText.getValue().toUpperCase()))
+                .filter(item -> item.getPrcSurname().toUpperCase().contains(filterText.getValue().toUpperCase())
+                || item.getPrcName().contains(filterText.getValue().toUpperCase())
+                || item.getWhoDecided().contains(filterText.getValue().toUpperCase())
+                || item.getProcessId().toString().contains(filterText.getValue().toUpperCase())
+                )
                 .collect(Collectors.toList());
         gridWorkersSuspended.setItems(foreignersFilter);
         labSizeRowGrid.setText(String.valueOf(foreignersFilter.size()));
