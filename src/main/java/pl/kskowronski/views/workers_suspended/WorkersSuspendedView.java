@@ -157,8 +157,6 @@ public class WorkersSuspendedView extends HorizontalLayout {
                     VerticalLayout vertical = new VerticalLayout ();
                     contractDialog.openContract(item);
                     contractDialog.add(vertical);
-                    contractDialog.setWidth("400px");
-                    contractDialog.setHeight("300px");
                     contractDialog.open();
                 }
         )).setWidth("30px");

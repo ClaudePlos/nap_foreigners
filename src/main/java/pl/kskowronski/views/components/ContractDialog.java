@@ -50,10 +50,13 @@ public class ContractDialog extends Dialog {
 
     public void openContract(NapForeignerLogDTO item) {
         this.removeAll();
+        setWidth("400px");
+        setHeight("400px");
         add(new Html("<b>Szczegóły wniosku:</b>"));
         VerticalLayout vertical = new VerticalLayout ();
         Optional<Requirement> requirement = requirementService.getRequirementForProcess(item.getProcessId());
         add( " " +  eatFirmaService.findById(requirement.get().getFrmId()).get().getFrmNazwa());
+        add(new Html("<div><br>" + requirement.get().getTitle()  + "</div>"));
         Optional<List<RequirementKey>> requirements = requirementKeyService.getRequirementForProcess(item.getProcessId());
         if (requirements.get().size() > 0){
             requirements.get().stream().forEach( e -> {
@@ -93,10 +96,13 @@ public class ContractDialog extends Dialog {
 
     public void openContract(WorkerDTO item) {
         this.removeAll();
+        setWidth("400px");
+        setHeight("400px");
         add(new Html("<b>Szczegóły wniosku:</b>"));
         VerticalLayout vertical = new VerticalLayout ();
         Optional<Requirement> requirement = requirementService.getRequirementForProcess(item.getProcesId());
         add( " " +  eatFirmaService.findById(requirement.get().getFrmId()).get().getFrmNazwa());
+        add(new Html("<div><br>" + requirement.get().getTitle()  + "</div>"));
         Optional<List<RequirementKey>> requirements = requirementKeyService.getRequirementForProcess(item.getProcesId());
         if (requirements.get().size() > 0){
             requirements.get().stream().forEach( e -> {

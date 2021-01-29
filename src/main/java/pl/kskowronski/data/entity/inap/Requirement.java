@@ -18,6 +18,9 @@ public class Requirement {
     @Column(name = "PROCES_ID")
     private BigDecimal procesId;
 
+    @Column(name = "TYTUL")
+    private String title;
+
     @Column(name = "FRM_ID")
     private BigDecimal frmId;
 
@@ -43,5 +46,13 @@ public class Requirement {
 
     public void setFrmId(BigDecimal frmId) {
         this.frmId = frmId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
