@@ -317,7 +317,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
         napForeignerLog.setId(item.getId());
         napForeignerLog.setPrcId(item.getPrcId());
         napForeignerLog.setStatus(status);
-        napForeignerLog.setDescription( descStatus + " przez HR (" + userLogged.getUsername() + ")");
+        napForeignerLog.setDescription( descStatus + " przez HR (" + userLogged.getUsername() + ") Decyzja: " + dialog);
         napForeignerLog.setWhoDecided(userLogged.getUsername());
         napForeignerLog.setWhenDecided(new Date());
         napForeignerLog.setProcessId(item.getProcessId());
