@@ -224,6 +224,13 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         Notification.show("Odrzucone process: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
                         this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
                         this.gridWorkersToAccept.getDataProvider().refreshAll();
+
+                        String topic = "Obcokrajowcy. Wniosek dla "+ item.getPrcNazwisko() + " " + item.getPrcImie() + " odrzucony. ProcId: " + item.getProcesId();
+                        sendMailTo(item.getRunProcess() + "@rekeep.pl"
+                                ,userLogged.getUsername() + "@rekeep.pl"
+                                , inputReject.getValue()
+                                , topic );
+
                         dialog.close();
                         refreshNumSize();
                     });
