@@ -50,13 +50,12 @@ import java.util.stream.Collectors;
 @JavaScript("./js/notification.js")
 public class WorkersAfterDecisionView extends HorizontalLayout {
 
-    private NapForeignerLogService napForeignerLogService;
-    private EatFirmaService eatFirmaService;
-    private AddressService addressService;
-    private WorkerService workerService;
-    private RequirementService requirementService;
-    private RequirementKeyService requirementKeyService;
-    private DocumentService documentService;
+    private transient NapForeignerLogService napForeignerLogService;
+    private transient EatFirmaService eatFirmaService;
+    private transient AddressService addressService;
+    private transient WorkerService workerService;
+    private transient RequirementService requirementService;
+    private transient RequirementKeyService requirementKeyService;
 
     @Autowired
     ContractDialog contractDialog;
@@ -64,13 +63,13 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
     private Grid<NapForeignerLogDTO> gridWorkersAfterDecision;
     private Grid<DocumentDTO> gridDocuments;
 
-    private MapperDate mapperDate = new MapperDate();
+    transient MapperDate mapperDate = new MapperDate();
 
     private Button butPlus = new Button("+");
     private Button butMinus = new Button("-");
     private TextField textPeriod = new TextField("Okres");
 
-    Optional<List<NapForeignerLogDTO>> foreigners = Optional.empty();
+    transient Optional<List<NapForeignerLogDTO>> foreigners = Optional.empty();
 
     private TextField filterText = new TextField();
     private Label labSizeRowGrid = new Label("0");
@@ -88,7 +87,6 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
         this.workerService = workerService;
         this.requirementService = requirementService;
         this.requirementKeyService = requirementKeyService;
-        this.documentService = documentService;
         setId("workers-to-acceptation-view");
         setHeight("95%");
 

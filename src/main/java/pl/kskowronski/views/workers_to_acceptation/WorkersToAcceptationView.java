@@ -26,8 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
 import pl.kskowronski.data.entity.inap.*;
 import pl.kskowronski.data.service.MailService;
-import pl.kskowronski.data.service.MapperDate;
-import pl.kskowronski.data.service.egeria.css.DictionaryService;
 import pl.kskowronski.data.service.egeria.ek.ForeignerService;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
 import pl.kskowronski.data.service.inap.DocumentService;
@@ -48,12 +46,8 @@ import java.util.stream.Collectors;
 @RouteAlias(value = "", layout = MainView.class)
 public class WorkersToAcceptationView extends HorizontalLayout {
 
-    WorkerService workerService;
-    ForeignerService foreignerService;
-    DocumentService documentService;
-    NapForeignerLogService napForeignerLogService;
-    DictionaryService dictionaryService;
-    MailService mailService;
+    private transient ForeignerService foreignerService;
+    private transient MailService mailService;
 
     @Autowired
     ContractDialog contractDialog;
@@ -61,26 +55,19 @@ public class WorkersToAcceptationView extends HorizontalLayout {
     private Grid<WorkerDTO> gridWorkersToAccept;
     private Grid<DocumentDTO> gridDocuments;
 
-    private Optional<List<WorkerDTO>> workers;
+    private transient Optional<List<WorkerDTO>> workers;
 
-    private User userLogged;
-
-    private MapperDate mapperDate = new MapperDate();
+    private transient User userLogged;
 
     private TextField filterText = new TextField();
     private Label labSizeRowGrid = new Label("0");
 
     public WorkersToAcceptationView(@Autowired WorkerService workerService
-            , @Autowired DictionaryService dictionaryService
             , @Autowired MailService mailService
             , @Autowired ForeignerService foreignerService
             , @Autowired DocumentService documentService
             , @Autowired NapForeignerLogService napForeignerLogService) {
         this.foreignerService = foreignerService;
-        this.workerService = workerService;
-        this.documentService = documentService;
-        this.napForeignerLogService = napForeignerLogService;
-        this.dictionaryService = dictionaryService;
         this.mailService = mailService;
         setId("workers-to-acceptation-view");
         setHeight("95%");
@@ -88,8 +75,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         Checkbox checkbox = new Checkbox();
         checkbox.setLabel("Polskie?");
         checkbox.setValue(false);
-        checkbox.addValueChangeListener(event -> {getWorkersToAccept(event.getValue());});
-        //add(checkbox);
+        checkbox.addValueChangeListener(event -> {getWorkersToAccept();});
 
         VaadinSession session = VaadinSession.getCurrent();
         userLogged = session.getAttribute(User.class);
@@ -100,7 +86,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         // hide details after click
         this.gridWorkersToAccept.setSelectionMode(Grid.SelectionMode.NONE);
 
-        getWorkersToAccept(false);
+        getWorkersToAccept();
 
         filterText.setPlaceholder("Search...");
         filterText.setClearButtonVisible(true);
@@ -163,8 +149,6 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                 item -> {
                     Dialog dialog = new Dialog();
                     String topic = "Obcokrajowcy. Wniosek do poprawy "+ item.getPrcNazwisko() + " " + item.getPrcImie() + " ProcId: " + item.getProcesId();
-                    //dialog.add(new Text("Wiadomość do " + item.getRunProcess() + "@rekeep.pl od " + userLogged.getUsername() + "@rekeep.pl"));
-                    //dialog.add(new Text("Temat: " + topic));
 
                     String content = "<div><b>Wiadomość do: </b>" + item.getRunProcess() + "@rekeep.pl od " + userLogged.getUsername() + "@rekeep.pl"
                             + "  <br><b>Temat:</b> " + topic +  "<br><b>Tekst:</b></div>";
@@ -259,9 +243,9 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         add(gridWorkersToAccept);
     }
 
-    private void getWorkersToAccept( Boolean polishNationality){
+    private void getWorkersToAccept(){
         workers = foreignerService.findAll();
-        if ( workers.get().size() == 0 ){
+        if ( workers.get().isEmpty() ){
             Notification.show("Brak kandydatów do akceptacji", 3000, Notification.Position.MIDDLE);
         }
 

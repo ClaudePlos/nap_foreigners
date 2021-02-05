@@ -49,7 +49,9 @@ public class MainView extends AppLayout {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<User> worker = userService.findByPassword(userDetails.getPassword());
         VaadinSession session = VaadinSession.getCurrent();
-        session.setAttribute(User.class, worker.get());
+        if (worker.isPresent()) {
+            session.setAttribute(User.class, worker.get());
+        }
     }
 
     private Component createHeaderContent() {

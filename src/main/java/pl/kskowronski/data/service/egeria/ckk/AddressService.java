@@ -1,7 +1,6 @@
 package pl.kskowronski.data.service.egeria.ckk;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 import pl.kskowronski.data.entity.egeria.ckk.Address;

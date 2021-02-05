@@ -1,12 +1,10 @@
 package pl.kskowronski.data.entity.inap;
 
-import javax.persistence.Column;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class NapForeignerLogDTO {
+public class NapForeignerLogDTO  {
 
     private BigDecimal id;
     private BigDecimal prcId;
@@ -22,6 +20,7 @@ public class NapForeignerLogDTO {
 
 
     public NapForeignerLogDTO() {
+        // Do nothing because of X and Y.
     }
 
     public BigDecimal getId() {

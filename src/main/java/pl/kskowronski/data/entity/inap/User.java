@@ -4,11 +4,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "NAP_UZYTKOWNIK")
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 2405172041950251807L;
 
     @Id
     @Column(name = "UZ_ID")

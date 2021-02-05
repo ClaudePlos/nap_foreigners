@@ -47,25 +47,25 @@ import java.util.stream.Collectors;
 @CssImport("./styles/views/workers_to_acceptation/workers-to-acceptation-view.css")
 public class WorkersSuspendedView extends HorizontalLayout {
 
-    private NapForeignerLogService napForeignerLogService;
-    private WorkerService workerService;
-    private MailService mailService;
+    private transient NapForeignerLogService napForeignerLogService;
+    private transient WorkerService workerService;
+    private transient MailService mailService;
 
     private Grid<NapForeignerLogDTO> gridWorkersSuspended;
     private Grid<DocumentDTO> gridDocuments;
 
-    private MapperDate mapperDate = new MapperDate();
+    private transient MapperDate mapperDate = new MapperDate();
 
     private Button butPlus = new Button("+");
     private Button butMinus = new Button("-");
     private TextField textPeriod = new TextField("Okres");
 
-    private User userLogged;
+    private transient User userLogged;
 
     @Autowired
     ContractDialog contractDialog;
 
-    Optional<List<NapForeignerLogDTO>> foreigners;
+    private transient Optional<List<NapForeignerLogDTO>> foreigners;
 
     private TextField filterText = new TextField();
     private Label  labSizeRowGrid = new Label("0");
@@ -186,8 +186,6 @@ public class WorkersSuspendedView extends HorizontalLayout {
                 item -> {
                     Dialog dialog = new Dialog();
                     String topic = "Obcokrajowcy. Wniosek do poprawy "+ item.getPrcSurname()+ " " + item.getPrcName() + " ProcId: " + item.getProcessId();
-                    //dialog.add(new Text("Wiadomość do " + item.getRunProcess() + "@rekeep.pl od " + userLogged.getUsername() + "@rekeep.pl"));
-                    //dialog.add(new Text("Temat: " + topic));
 
                     String runProcess = processInstanceService.getProcessInstance(item.getProcessId()).get().getRunProcess();
 
@@ -254,7 +252,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
         gridDocuments.addColumn(new NativeButtonRenderer<DocumentDTO>("PDF",
                 item -> {
                     String pdfUrl = documentService.generateUrlForPDF(item.getId());
-                    UI.getCurrent().getPage().executeJavaScript("window.open('" + pdfUrl + "','_blank')");    ;
+                    UI.getCurrent().getPage().executeJavaScript("window.open('" + pdfUrl + "','_blank')");
                 }
         ));
 
@@ -277,7 +275,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
 
     private void getDataForPeriod() throws Exception {
         foreigners = napForeignerLogService.findAllSuspendedForPeriod(textPeriod.getValue());
-        if (foreigners.get().size() == 0) {
+        if (foreigners.get().isEmpty()) { //&& foreigners.get().size() == 0
             Notification.show("Brak pozycji do wyświetlenia w danym miesiącu", 3000, Notification.Position.MIDDLE);
         }
         gridWorkersSuspended.setItems(foreigners.get());
