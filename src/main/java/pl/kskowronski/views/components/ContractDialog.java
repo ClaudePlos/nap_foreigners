@@ -30,13 +30,13 @@ import java.util.Optional;
 public class ContractDialog extends Dialog {
 
 
-    private RequirementService requirementService;
-    private EatFirmaService eatFirmaService;
-    private RequirementKeyService requirementKeyService;
-    private DictionaryService dictionaryService;
-    private OccupationRepo occupationRepo;
+    private transient RequirementService requirementService;
+    private transient EatFirmaService eatFirmaService;
+    private transient RequirementKeyService requirementKeyService;
+    private transient DictionaryService dictionaryService;
+    private transient OccupationRepo occupationRepo;
 
-    private MapperDate mapperDate = new MapperDate();
+    private transient MapperDate mapperDate = new MapperDate();
 
     @Autowired
     public ContractDialog(RequirementService requirementService, EatFirmaService eatFirmaService

@@ -39,7 +39,7 @@ public class NapForeignerLogService extends CrudService<NapForeignerLog, BigDeci
 
     MapperDate mapperDate = new MapperDate();
 
-    public void save(NapForeignerLog napForeignerLog){ repo.save(napForeignerLog);};
+    public void save(NapForeignerLog napForeignerLog){ repo.save(napForeignerLog);}
 
     public Optional<List<NapForeignerLogDTO>> findAll(){
         Optional<List<NapForeignerLogDTO>> foreignersDTO = Optional.of(new ArrayList<>());
