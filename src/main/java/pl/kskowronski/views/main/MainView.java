@@ -82,7 +82,7 @@ public class MainView extends AppLayout {
         logoLayout.setId("logo");
         logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         logoLayout.add(new Image("images/logo.png", "nap_foreigners logo"));
-        logoLayout.add(new H1("nap_foreigners"));
+        logoLayout.add(new H1(" Foreigners"));
         layout.add(logoLayout, menu);
         return layout;
     }

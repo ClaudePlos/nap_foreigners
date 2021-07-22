@@ -146,7 +146,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
         gridWorkersSuspended.addColumn(TemplateRenderer.<NapForeignerLogDTO>of(
                 "<div title='[[item.description]]'>[[item.description]]</div>")
                 .withProperty("description", NapForeignerLogDTO::getDescription))
-                .setHeader("description");
+                .setHeader("Description");
 
         gridWorkersSuspended.addColumn("prcNumber");
         gridWorkersSuspended.addColumn("prcName");

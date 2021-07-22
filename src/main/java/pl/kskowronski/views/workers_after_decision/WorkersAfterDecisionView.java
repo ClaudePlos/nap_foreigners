@@ -146,7 +146,7 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
         gridWorkersAfterDecision.addColumn(TemplateRenderer.<NapForeignerLogDTO>of(
                 "<div title='[[item.description]]'>[[item.description]]</div>")
                 .withProperty("description", NapForeignerLogDTO::getDescription))
-                .setHeader("description");
+                .setHeader("Description");
 
         gridWorkersAfterDecision.addColumn("prcNumber");
         gridWorkersAfterDecision.addColumn("prcName");

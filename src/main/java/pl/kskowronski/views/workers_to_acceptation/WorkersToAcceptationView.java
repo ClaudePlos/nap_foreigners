@@ -165,7 +165,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         NapForeignerLog napForeignerLog = new NapForeignerLog();
                         napForeignerLog.setPrcId(item.getPrcId());
                         napForeignerLog.setStatus(NapForeignerLog.STATUS_SUSPENDED);
-                        napForeignerLog.setDescription("Zawieszone przez HR (" + userLogged.getUsername()  +")");
+                        napForeignerLog.setDescription("Zawieszone przez HR (" + userLogged.getUsername()  +"): " + inputReject.getValue());
                         napForeignerLog.setWhoDecided(userLogged.getUsername());
                         napForeignerLog.setWhenDecided(new Date());
                         napForeignerLog.setProcessId(item.getProcesId());
