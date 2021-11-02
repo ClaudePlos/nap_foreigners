@@ -87,6 +87,10 @@ public class NapForeignerLogService extends CrudService<NapForeignerLog, BigDeci
             foreigner.setPrcNumber(worker.get().getPrcNumer());
             foreigner.setPrcName(worker.get().getPrcImie());
             foreigner.setPrcSurname(worker.get().getPrcNazwisko());
+        } else {
+            foreigner.setPrcNumber(BigDecimal.ZERO);
+            foreigner.setPrcName("-");
+            foreigner.setPrcSurname("-");
         }
         return foreigner;
     }

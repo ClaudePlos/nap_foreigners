@@ -19,7 +19,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.kskowronski.data.entity.egeria.ckk.Address;
-import pl.kskowronski.data.entity.egeria.ek.WorkerDTO;
 import pl.kskowronski.data.entity.global.EatFirma;
 import pl.kskowronski.data.entity.inap.DocumentDTO;
 import pl.kskowronski.data.entity.inap.NapForeignerLogDTO;

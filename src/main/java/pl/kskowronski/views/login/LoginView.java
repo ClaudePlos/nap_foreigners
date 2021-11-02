@@ -53,7 +53,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         i18n.getErrorMessage().setTitle("Niepoprawna nazwa użytkownika lub hasło");
         i18n.getErrorMessage().setMessage("Sprawdź, czy podałeś poprawną nazwę użytkownika i hasło, i spróbuj ponownie.");
         i18n.setAdditionalInformation(
-                "Info: v2021.7");
+                "Info: v2022.1");
         return i18n;
     }
 }
