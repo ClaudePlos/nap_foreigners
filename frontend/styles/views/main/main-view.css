@@ -42,3 +42,18 @@ vaadin-tab[selected] {
   background-color: var(--lumo-primary-color-10pct);
   color: var(--lumo-primary-text-color);
 }
+
+#header a {
+  margin-right: 12px;
+  font-size: 14px;
+}
+
+label.labName {
+  border-radius: 50%;
+  width: 25px;
+  margin-left: auto;
+  margin-right: var(--lumo-space-m);
+  overflow: hidden;
+  background-color: hsl(187deg 45% 47%);
+  text-align: center
+}

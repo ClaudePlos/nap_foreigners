@@ -1,6 +1,7 @@
 package pl.kskowronski.data.service.inap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 import pl.kskowronski.data.entity.egeria.ek.Worker;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class NapForeignerLogService extends CrudService<NapForeignerLog, BigDecimal> {
@@ -41,9 +43,9 @@ public class NapForeignerLogService extends CrudService<NapForeignerLog, BigDeci
 
     public void save(NapForeignerLog napForeignerLog){ repo.save(napForeignerLog);}
 
-    public Optional<List<NapForeignerLogDTO>> findAll(){
+    public Optional<List<NapForeignerLogDTO>> findAll(int page, int pageSize){
         Optional<List<NapForeignerLogDTO>> foreignersDTO = Optional.of(new ArrayList<>());
-        List<NapForeignerLog> foreigners = repo.findAll();
+        List<NapForeignerLog> foreigners = repo.findAll(PageRequest.of(page, pageSize)).stream().collect(Collectors.toList());
         foreigners.stream().forEach( item -> foreignersDTO.get().add( mapperNapForeignerLog(item)));
         return foreignersDTO;
     };

@@ -1,5 +1,6 @@
 package pl.kskowronski.views.main;
 
+import java.util.Locale;
 import java.util.Optional;
 
 import com.vaadin.flow.component.Component;
@@ -11,6 +12,7 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -40,7 +42,14 @@ public class MainView extends AppLayout {
     private final Tabs menu;
     private H1 viewTitle;
 
-    public MainView(@Autowired UserService userService) {
+    private transient UserService userService;
+
+    private transient User worker;
+    private Label labName = new Label();
+
+    @Autowired
+    public MainView( UserService userService ) {
+        this.userService = userService;
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         menu = createMenu();
@@ -65,9 +74,10 @@ public class MainView extends AppLayout {
         viewTitle = new H1();
         layout.add(viewTitle);
 
-        Anchor logout = new Anchor("/logout","Wyloguj >");
+        Anchor logout = new Anchor("/logout","Wyloguj");
 
-        layout.add(new Image("images/user.svg", "Avatar"), logout);
+        labName.setClassName("labName");
+        layout.add(labName, logout);
         return layout;
     }
 
@@ -97,6 +107,14 @@ public class MainView extends AppLayout {
     }
 
     private Component[] createMenuItems() {
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<User> workerOp = userService.findByUsername(userDetails.getUsername());
+        worker = workerOp.get();
+
+        labName.setText(worker.getUsername().toUpperCase(Locale.ROOT).substring(0,1));
+        labName.setTitle(worker.getUsername());
+
         return new Tab[] {
             createTab("Do Akceptacji", WorkersToAcceptationView.class),
             createTab("Zawieszeni", WorkersSuspendedView.class),
