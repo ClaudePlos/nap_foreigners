@@ -35,6 +35,7 @@ import pl.kskowronski.views.components.ContractDialog;
 import pl.kskowronski.views.main.MainView;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -71,7 +72,7 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
     transient Optional<List<NapForeignerLogDTO>> foreigners = Optional.empty();
 
     private TextField filterText = new TextField();
-    private Label labSizeRowGrid = new Label("0");
+    //private Label labSizeRowGrid = new Label("0");
 
     public WorkersAfterDecisionView(@Autowired NapForeignerLogService napForeignerLogService
             , @Autowired AddressService addressService
@@ -132,7 +133,9 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
         filterText.setClearButtonVisible(true);
         filterText.setValueChangeMode(ValueChangeMode.EAGER);
         filterText.addValueChangeListener(e -> updateList());
-        add(butMinus, textPeriod, butPlus, filterText, new Label("Ilość wierszy: "), labSizeRowGrid);
+        add(butMinus, textPeriod, butPlus, filterText
+                //, new Label("Ilość wierszy: "), labSizeRowGrid
+        );
 
 
         this.gridWorkersAfterDecision = new Grid<>(NapForeignerLogDTO.class);
@@ -191,12 +194,26 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
 
 
     private void getDataForPeriod() throws Exception {
-        foreigners = napForeignerLogService.findAllAcceptAndDelForPeriod(textPeriod.getValue());
-        if (foreigners.get().size() == 0) {
-            Notification.show("Brak pozycji do wyświetlenia w danym miesiącu", 3000, Notification.Position.MIDDLE);
-        }
-        gridWorkersAfterDecision.setItems(foreigners.get());
-        labSizeRowGrid.setText(String.valueOf(foreigners.get().size()));
+
+        gridWorkersAfterDecision.setItems( query ->
+                {
+                    try {
+                        foreigners =  napForeignerLogService.findAllAcceptAndDelForPeriod(textPeriod.getValue(), query.getPage(), query.getPageSize() );
+                        if (foreigners.get().size() == 0) {
+                            Notification.show("Brak pozycji do wyświetlenia w danym miesiącu", 3000, Notification.Position.MIDDLE);
+                        }
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    return foreigners.get().stream();
+                }
+         );
+
+
+        //gridWorkersAfterDecision.setItems(foreigners.get());
+//        if (foreigners.isPresent()) {
+//            labSizeRowGrid.setText(String.valueOf(foreigners.get().size()));
+//        }
     }
 
     private void GenerateNotificationPDF(BigDecimal prcId, BigDecimal processId, String prcName, String prcSurname, BigDecimal prcNumber, String dateNow){
@@ -239,7 +256,7 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
                 )
                 .collect(Collectors.toList());
         gridWorkersAfterDecision.setItems(foreignersDTO);
-        labSizeRowGrid.setText(String.valueOf(foreignersDTO.size()));
+        //labSizeRowGrid.setText(String.valueOf(foreignersDTO.size()));
     }
 
 }

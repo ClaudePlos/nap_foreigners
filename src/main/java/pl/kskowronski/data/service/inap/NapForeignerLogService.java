@@ -1,7 +1,9 @@
 package pl.kskowronski.data.service.inap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 import pl.kskowronski.data.entity.egeria.ek.Worker;
@@ -13,6 +15,7 @@ import pl.kskowronski.data.service.egeria.ek.WorkerRepo;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
@@ -51,11 +54,12 @@ public class NapForeignerLogService extends CrudService<NapForeignerLog, BigDeci
     };
 
 
-    public Optional<List<NapForeignerLogDTO>> findAllAcceptAndDelForPeriod(String period) throws Exception {
+    public Optional<List<NapForeignerLogDTO>> findAllAcceptAndDelForPeriod(String period, int page, int pageSize) throws ParseException {
         Optional<List<NapForeignerLogDTO>> foreignersDTO = Optional.of(new ArrayList<>());
         LocalDate ldLastDay = LocalDate.parse( period+"-01", mapperDate.ldYYYYMMDD).with(TemporalAdjusters.lastDayOfMonth());
-        Optional<List<NapForeignerLog>> foreigners = repo.findAllAcceptAndDelForPeriod(mapperDate.dtYYYYMMDD.parse(period+"-01")
-                , Date.from(ldLastDay.atStartOfDay(ZoneId.systemDefault()).plusHours(23).plusMinutes(59).toInstant()) );
+        Optional<Page<NapForeignerLog>> foreigners = repo.findAllAcceptAndDelForPeriod(mapperDate.dtYYYYMMDD.parse(period+"-01")
+                , Date.from(ldLastDay.atStartOfDay(ZoneId.systemDefault()).plusHours(23).plusMinutes(59).toInstant())
+                , PageRequest.of(page, pageSize));
         if (foreigners.isPresent()) {
             foreigners.get().stream().forEach(item -> foreignersDTO.get().add(mapperNapForeignerLog(item)));
         }
