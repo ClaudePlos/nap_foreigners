@@ -20,7 +20,10 @@ public interface NapForeignerLogRepo extends JpaRepository<NapForeignerLog, BigD
     @Query("select f from NapForeignerLog f where  f.whenDecided >= :dateFrom and f.whenDecided <= :dateTo " +
             "and f.status in ('ZAAKCEPTOWANE','ODRZUCONE')" +
             "order by f.whenDecided desc")
-    Optional<Page<NapForeignerLog>> findAllAcceptAndDelForPeriod(@Param("dateFrom") Date dateFrom, @Param("dateTo") Date dateTo, Pageable pageable);
+    Optional<List<NapForeignerLog>> findAllAcceptAndDelForPeriod(@Param("dateFrom") Date dateFrom
+            , @Param("dateTo") Date dateTo
+           // , Pageable pageable
+    );
 
     @Query("select f from NapForeignerLog f where  f.whenDecided >= :dateFrom and f.whenDecided <= :dateTo " +
             "and f.status in ('ZAWIESZONE')" +

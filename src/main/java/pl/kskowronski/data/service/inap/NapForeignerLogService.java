@@ -54,12 +54,13 @@ public class NapForeignerLogService extends CrudService<NapForeignerLog, BigDeci
     };
 
 
-    public Optional<List<NapForeignerLogDTO>> findAllAcceptAndDelForPeriod(String period, int page, int pageSize) throws ParseException {
+    public Optional<List<NapForeignerLogDTO>> findAllAcceptAndDelForPeriod(String period /*, int page, int pageSize*/) throws ParseException {
         Optional<List<NapForeignerLogDTO>> foreignersDTO = Optional.of(new ArrayList<>());
         LocalDate ldLastDay = LocalDate.parse( period+"-01", mapperDate.ldYYYYMMDD).with(TemporalAdjusters.lastDayOfMonth());
-        Optional<Page<NapForeignerLog>> foreigners = repo.findAllAcceptAndDelForPeriod(mapperDate.dtYYYYMMDD.parse(period+"-01")
+        Optional<List<NapForeignerLog>> foreigners = repo.findAllAcceptAndDelForPeriod(mapperDate.dtYYYYMMDD.parse(period+"-01")
                 , Date.from(ldLastDay.atStartOfDay(ZoneId.systemDefault()).plusHours(23).plusMinutes(59).toInstant())
-                , PageRequest.of(page, pageSize));
+               // , PageRequest.of(page, pageSize)
+        );
         if (foreigners.isPresent()) {
             foreigners.get().stream().forEach(item -> foreignersDTO.get().add(mapperNapForeignerLog(item)));
         }
