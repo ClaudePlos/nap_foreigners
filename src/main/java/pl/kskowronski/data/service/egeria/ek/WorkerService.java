@@ -12,6 +12,9 @@ import pl.kskowronski.data.service.global.ConsolidationService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -73,7 +76,9 @@ public class WorkerService extends CrudService<Worker, BigDecimal> {
 
     @Transactional
     public void acceptForeignerApplication(String text, BigDecimal processId) {
-        this.em.createNativeQuery("update naprzod2.nzap_zapotrzebowania set opis_zadania = '" + text + "' where proces_id = " + processId)
+        this.em.createNativeQuery("update naprzod2.nzap_zapotrzebowania set opis_zadania = '" + text +
+                        " [data i godz.: " + LocalDate.now() + " " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "]' " +
+                        " where proces_id = " + processId)
                 .executeUpdate();
     }
 
