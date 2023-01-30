@@ -118,9 +118,12 @@ public class WorkersToAcceptationView extends HorizontalLayout {
 
         gridWorkersToAccept.addColumn(new NativeButtonRenderer<WorkerDTO>("Akceptuję",
                 item -> {
+                    VerticalLayout v01 = new VerticalLayout();
                     Dialog dialog = new Dialog();
                     dialog.add(new Text("Podaj powód: "));
-                    Input inputReject = new Input();
+                    TextArea inputReject = new TextArea();
+                    inputReject.setHeight("180px");
+                    inputReject.setWidth("400px");
                     inputReject.setValue("OK");
                     Button confirmButton = new Button("Akceptuję", event -> {
                         workerService.acceptForeignerApplication("Zaakceptowane przez HR (" + userLogged.getUsername() + ")" + inputReject.getValue()
@@ -139,7 +142,8 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         dialog.close();
                         refreshNumSize();
                     });
-                    dialog.add(inputReject, confirmButton);
+                    v01.add(inputReject, confirmButton);
+                    dialog.add(v01);
                     dialog.open();
                 }
         )).setWidth("50px");
@@ -270,6 +274,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         || item.getPrcImie().toUpperCase().contains(filterText.getValue().toUpperCase())
                         || item.getRunProcess().toUpperCase().contains(filterText.getValue().toUpperCase())
                         || item.getProcesId().toString().contains(filterText.getValue().toUpperCase())
+                        || item.getSk().contains(filterText.getValue().toUpperCase())
                 )
                 .collect(Collectors.toList());
         gridWorkersToAccept.setItems(workersDTO);
