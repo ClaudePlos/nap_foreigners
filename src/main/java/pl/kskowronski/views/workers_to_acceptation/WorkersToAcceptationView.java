@@ -96,6 +96,8 @@ public class WorkersToAcceptationView extends HorizontalLayout {
 
         gridWorkersToAccept.setColumns("status","procesId", "prcNumer", "prcNazwisko", "prcImie", "prcObywatelstwo");
 
+        gridWorkersToAccept.addColumn(WorkerDTO::getTypeOfAgreement).setHeader("Um").setWidth("50px");;
+
         gridWorkersToAccept.addColumn("runDate").setWidth("120px");
 
         gridDocuments.setColumns("nazwa", "opis", "frmName");
@@ -275,6 +277,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         || item.getRunProcess().toUpperCase().contains(filterText.getValue().toUpperCase())
                         || item.getProcesId().toString().contains(filterText.getValue().toUpperCase())
                         || item.getSk().contains(filterText.getValue().toUpperCase())
+                        || item.getTypeOfAgreement().contains(filterText.getValue().toUpperCase())
                 )
                 .collect(Collectors.toList());
         gridWorkersToAccept.setItems(workersDTO);

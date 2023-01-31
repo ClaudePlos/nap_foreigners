@@ -22,6 +22,8 @@ public class WorkerDTO {
     private String status;
     private String frmName;
 
+    private String typeOfAgreement;
+
     public WorkerDTO() {
     }
 
@@ -143,5 +145,13 @@ public class WorkerDTO {
 
     public void setFrmName(String frmName) {
         this.frmName = frmName;
+    }
+
+    public String getTypeOfAgreement() {
+        return typeOfAgreement;
+    }
+
+    public void setTypeOfAgreement(String typeOfAgreement) {
+        this.typeOfAgreement = typeOfAgreement;
     }
 }

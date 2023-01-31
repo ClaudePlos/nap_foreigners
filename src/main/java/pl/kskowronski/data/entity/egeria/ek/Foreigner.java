@@ -42,6 +42,9 @@ public class Foreigner {
     @Column(name = "STATUS")
     private String status;
 
+    @Column(name = "KOD_TYPU")
+    private String typeOfAgreement;
+
     public Foreigner() {
     }
 
@@ -123,5 +126,13 @@ public class Foreigner {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getTypeOfAgreement() {
+        return typeOfAgreement;
+    }
+
+    public void setTypeOfAgreement(String typeOfAgreement) {
+        this.typeOfAgreement = typeOfAgreement;
     }
 }
