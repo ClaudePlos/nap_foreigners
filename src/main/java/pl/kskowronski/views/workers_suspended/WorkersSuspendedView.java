@@ -216,6 +216,8 @@ public class WorkersSuspendedView extends HorizontalLayout {
                         napForeignerLog.setWhenDecided(new Date());
                         napForeignerLog.setProcessId(item.getProcessId());
                         napForeignerLog.setRefresh("N");
+                        napForeignerLog.setWhoRunInInap(item.getWhoRunInInap());
+                        napForeignerLog.setSkForApplication(item.getSkForApplication());
                         napForeignerLogService.save(napForeignerLog);
                         Notification.show("Wniosek zawiszony procId: " + item.getProcessId() + " dla " + item.getPrcSurname(), 3000, Notification.Position.MIDDLE);
                         item.setRefresh("N");
