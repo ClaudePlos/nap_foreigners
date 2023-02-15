@@ -141,6 +141,8 @@ public class WorkersSuspendedView extends HorizontalLayout {
         gridWorkersSuspended.addColumn("whenDecided");
         gridWorkersSuspended.addColumn("whoDecided");
         gridWorkersSuspended.addColumn("status");
+        gridWorkersSuspended.addColumn("whoRunInInap").setHeader("Run");
+        gridWorkersSuspended.addColumn("skForApplication").setHeader("SK");
 
 
         gridWorkersSuspended.addColumn(TemplateRenderer.<NapForeignerLogDTO>of(
@@ -321,6 +323,8 @@ public class WorkersSuspendedView extends HorizontalLayout {
         napForeignerLog.setWhoDecided(userLogged.getUsername());
         napForeignerLog.setWhenDecided(new Date());
         napForeignerLog.setProcessId(item.getProcessId());
+        napForeignerLog.setWhoRunInInap(item.getWhoRunInInap());
+        napForeignerLog.setSkForApplication(item.getSkForApplication());
         napForeignerLogService.save(napForeignerLog);
     }
 
@@ -330,6 +334,8 @@ public class WorkersSuspendedView extends HorizontalLayout {
                 || item.getPrcName().contains(filterText.getValue().toUpperCase())
                 || item.getWhoDecided().contains(filterText.getValue().toUpperCase())
                 || item.getProcessId().toString().contains(filterText.getValue().toUpperCase())
+                || item.getWhoRunInInap().toString().contains(filterText.getValue().toUpperCase())
+                || item.getSkForApplication().toString().contains(filterText.getValue().toUpperCase())
                 )
                 .collect(Collectors.toList());
         gridWorkersSuspended.setItems(foreignersFilter);

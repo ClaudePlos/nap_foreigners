@@ -41,6 +41,12 @@ public class NapForeignerLog {
     @Column(name = "REFRESH")
     private String refresh;
 
+    @Column(name = "WHO_RUN_IN_INAP")
+    private String whoRunInInap;
+
+    @Column(name = "SK_FOR_APPLICATION")
+    private String skForApplication;
+
     public NapForeignerLog() {
     }
 
@@ -106,5 +112,21 @@ public class NapForeignerLog {
 
     public void setRefresh(String refresh) {
         this.refresh = refresh;
+    }
+
+    public String getWhoRunInInap() {
+        return whoRunInInap;
+    }
+
+    public void setWhoRunInInap(String whoRunInInap) {
+        this.whoRunInInap = whoRunInInap;
+    }
+
+    public String getSkForApplication() {
+        return skForApplication;
+    }
+
+    public void setSkForApplication(String skForApplication) {
+        this.skForApplication = skForApplication;
     }
 }

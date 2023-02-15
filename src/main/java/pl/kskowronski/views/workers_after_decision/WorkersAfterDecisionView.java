@@ -153,6 +153,8 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
         gridWorkersAfterDecision.addColumn("prcNumber");
         gridWorkersAfterDecision.addColumn("prcName");
         gridWorkersAfterDecision.addColumn("prcSurname");
+        gridWorkersAfterDecision.addColumn("whoRunInInap").setHeader("Run");
+        gridWorkersAfterDecision.addColumn("skForApplication").setHeader("SK");
 
         gridWorkersAfterDecision.addColumn(new NativeButtonRenderer<NapForeignerLogDTO>("Um",
                 item -> {
@@ -202,29 +204,6 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
     }
 
 
-//    private void getDataForPeriod() throws Exception {
-//
-////        gridWorkersAfterDecision.setItems( query ->
-////                {
-////                    try {
-////                        foreigners =  napForeignerLogService.findAllAcceptAndDelForPeriod(textPeriod.getValue() , query.getPage(), query.getPageSize() );
-////                        if (foreigners.get().size() == 0) {
-////                            Notification.show("Brak pozycji do wyświetlenia w danym miesiącu", 3000, Notification.Position.MIDDLE);
-////                        }
-////                    } catch (ParseException e) {
-////                        e.printStackTrace();
-////                    }
-////                    return foreigners.get().stream();
-////                }
-////         );
-//
-//
-//        //gridWorkersAfterDecision.setItems(foreigners.get());
-////        if (foreigners.isPresent()) {
-////            labSizeRowGrid.setText(String.valueOf(foreigners.get().size()));
-////        }
-//    }
-
     private void GenerateNotificationPDF(BigDecimal prcId, BigDecimal processId, String prcName, String prcSurname, BigDecimal prcNumber, String dateNow){
         String address = "";
         String frmName = "";
@@ -262,6 +241,8 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
                         || item.getPrcName().toUpperCase().contains(filterText.getValue().toUpperCase())
                         || item.getWhoDecided().toUpperCase().contains(filterText.getValue().toUpperCase())
                         || item.getStatus().toUpperCase().contains(filterText.getValue().toUpperCase())
+                        || item.getWhoRunInInap().toString().contains(filterText.getValue().toUpperCase())
+                        || item.getSkForApplication().toString().contains(filterText.getValue().toUpperCase())
                 )
                 .collect(Collectors.toList());
         gridWorkersAfterDecision.setItems(foreignersDTO);

@@ -14,6 +14,8 @@ import pl.kskowronski.data.service.MapperDate;
 import pl.kskowronski.data.service.egeria.ek.WorkerRepo;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -30,7 +32,7 @@ public class NapForeignerLogService extends CrudService<NapForeignerLog, BigDeci
 
     private NapForeignerLogRepo repo;
 
-    public NapForeignerLogService(@Autowired NapForeignerLogRepo repo) {
+    public NapForeignerLogService(NapForeignerLogRepo repo, ProcessInstanceRepo processInstanceRepo) {
         this.repo = repo;
     }
 
@@ -90,6 +92,8 @@ public class NapForeignerLogService extends CrudService<NapForeignerLog, BigDeci
         foreigner.setWhoDecided(f.getWhoDecided());
         foreigner.setProcessId(f.getProcessId());
         foreigner.setRefresh(f.getRefresh());
+        foreigner.setWhoRunInInap( f.getWhoRunInInap() );
+        foreigner.setSkForApplication( f.getSkForApplication() );
         if (worker.isPresent()){
             foreigner.setPrcNumber(worker.get().getPrcNumer());
             foreigner.setPrcName(worker.get().getPrcImie());

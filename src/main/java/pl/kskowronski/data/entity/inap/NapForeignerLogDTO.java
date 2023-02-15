@@ -1,5 +1,6 @@
 package pl.kskowronski.data.entity.inap;
 
+import javax.persistence.Column;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -17,6 +18,8 @@ public class NapForeignerLogDTO  {
     private String prcSurname;
     private BigDecimal processId;
     private String refresh;
+    private String skForApplication;
+    private String whoRunInInap;
 
 
     public NapForeignerLogDTO() {
@@ -109,5 +112,21 @@ public class NapForeignerLogDTO  {
 
     public void setRefresh(String refresh) {
         this.refresh = refresh;
+    }
+
+    public String getSkForApplication() {
+        return skForApplication;
+    }
+
+    public void setSkForApplication(String skForApplication) {
+        this.skForApplication = skForApplication;
+    }
+
+    public String getWhoRunInInap() {
+        return whoRunInInap;
+    }
+
+    public void setWhoRunInInap(String whoRunInInap) {
+        this.whoRunInInap = whoRunInInap;
     }
 }
