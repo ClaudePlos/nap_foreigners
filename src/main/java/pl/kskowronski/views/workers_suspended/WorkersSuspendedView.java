@@ -140,7 +140,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
         gridWorkersSuspended.addColumn("processId");
         gridWorkersSuspended.addColumn("whenDecided");
         gridWorkersSuspended.addColumn("whoDecided");
-        gridWorkersSuspended.addColumn("status");
+        //gridWorkersSuspended.addColumn("status");
         gridWorkersSuspended.addColumn("whoRunInInap").setHeader("Run");
         gridWorkersSuspended.addColumn("skForApplication").setHeader("SK");
 
