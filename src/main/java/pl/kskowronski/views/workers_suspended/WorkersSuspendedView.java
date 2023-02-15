@@ -336,8 +336,9 @@ public class WorkersSuspendedView extends HorizontalLayout {
                 || item.getPrcName().contains(filterText.getValue().toUpperCase())
                 || item.getWhoDecided().contains(filterText.getValue().toUpperCase())
                 || item.getProcessId().toString().contains(filterText.getValue().toUpperCase())
-                || item.getWhoRunInInap().toString().contains(filterText.getValue().toUpperCase())
-                || item.getSkForApplication().toString().contains(filterText.getValue().toUpperCase())
+                || item.getDescription().contains(filterText.getValue().toUpperCase())
+                || item.getWhoRunInInap().toUpperCase().contains(filterText.getValue().toUpperCase())
+                || item.getSkForApplication().toUpperCase().contains(filterText.getValue().toUpperCase())
                 )
                 .collect(Collectors.toList());
         gridWorkersSuspended.setItems(foreignersFilter);

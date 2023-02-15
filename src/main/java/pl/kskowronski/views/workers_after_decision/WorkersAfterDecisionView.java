@@ -240,9 +240,9 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
                 .filter(item -> item.getPrcSurname().toUpperCase().contains(filterText.getValue().toUpperCase())
                         || item.getPrcName().toUpperCase().contains(filterText.getValue().toUpperCase())
                         || item.getWhoDecided().toUpperCase().contains(filterText.getValue().toUpperCase())
-                        || item.getStatus().toUpperCase().contains(filterText.getValue().toUpperCase())
-                        || item.getWhoRunInInap().toString().contains(filterText.getValue().toUpperCase())
-                        || item.getSkForApplication().toString().contains(filterText.getValue().toUpperCase())
+                        || item.getDescription().toUpperCase().contains(filterText.getValue().toUpperCase())
+                        || item.getWhoRunInInap().toUpperCase().contains(filterText.getValue().toUpperCase())
+                        || item.getSkForApplication().toUpperCase().contains(filterText.getValue().toUpperCase())
                 )
                 .collect(Collectors.toList());
         gridWorkersAfterDecision.setItems(foreignersDTO);
