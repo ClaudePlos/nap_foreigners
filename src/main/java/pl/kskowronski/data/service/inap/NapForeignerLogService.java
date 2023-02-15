@@ -32,7 +32,7 @@ public class NapForeignerLogService extends CrudService<NapForeignerLog, BigDeci
 
     private NapForeignerLogRepo repo;
 
-    public NapForeignerLogService(NapForeignerLogRepo repo, ProcessInstanceRepo processInstanceRepo) {
+    public NapForeignerLogService(NapForeignerLogRepo repo) {
         this.repo = repo;
     }
 

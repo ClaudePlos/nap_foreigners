@@ -1,7 +1,5 @@
 package pl.kskowronski.data.entity.inap;
 
-import javax.persistence.Column;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
