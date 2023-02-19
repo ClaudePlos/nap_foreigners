@@ -10,6 +10,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import fr.dudie.nominatim.client.JsonNominatimClient;
+import pl.kskowronski.data.entity.egeria.css.CostCenterDTO;
+import pl.kskowronski.data.service.egeria.css.CostCentersService;
 import pl.kskowronski.views.main.MainView;
 import software.xdev.vaadin.maps.leaflet.flow.LMap;
 import software.xdev.vaadin.maps.leaflet.flow.data.LCircle;
@@ -31,7 +33,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 
 
 @Route(value = "cost_centers_map", layout = MainView.class)
-@PageTitle("cost center map")
+@PageTitle("cost centers map")
 @RouteAlias(value = "cost_centers_map", layout = MainView.class)
 public class CostCentersMapView extends VerticalLayout {
 
@@ -43,8 +45,10 @@ public class CostCentersMapView extends VerticalLayout {
     private LMarker markerRathaus;
     private LMarker marker;
 
+    private CostCentersService costCentersService;
 
-    public CostCentersMapView() throws IOException {
+    public CostCentersMapView(CostCentersService costCentersService) throws IOException {
+        this.costCentersService = costCentersService;
         final SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
         final ClientConnectionManager connexionManager = new SingleClientConnManager(null, registry);
@@ -115,14 +119,23 @@ public class CostCentersMapView extends VerticalLayout {
                 this.markerRathaus);
     }
 
-    private void addCostCenterForRekeep() throws IOException {
-        List<Address> addresses = nominatimClient.search(" Łódź, Polska, Piotrkowska 255");
-        System.out.println(addresses);
+    private void addCostCenterForRekeep()  {
+        List<CostCenterDTO> costCenters = costCentersService.getAllCostCentersForRekeep("Z");
 
-        addresses.forEach( item -> {
-            marker = new LMarker(item.getLatitude(), item.getLongitude(), item.getDisplayName());
-            marker.setPopup(item.getDisplayName());
-            this.map.addLComponents(marker);
+        costCenters.forEach( c -> {
+            List<Address> addresses = null;
+            try {
+                addresses = nominatimClient.search(c.getCity() + ", Polska, " + c.getStreet() );
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (addresses.size() > 0 ) {
+                marker = new LMarker(addresses.get(0).getLatitude(), addresses.get(0).getLongitude(), addresses.get(0).getDisplayName());
+                marker.setPopup("<p><center><b>" + c.getSkKod() + "</b></center></p><p>" + c.getSkDesc() + "</p>" + addresses.get(0).getDisplayName());
+                this.map.addLComponents(marker);
+            }
         });
+
     }
 }
