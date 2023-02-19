@@ -27,6 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.kskowronski.data.entity.inap.User;
 import pl.kskowronski.data.service.inap.UserService;
+import pl.kskowronski.views.cost_centers_map.CostCentersMapView;
 import pl.kskowronski.views.workers_after_decision.WorkersAfterDecisionView;
 import pl.kskowronski.views.workers_suspended.WorkersSuspendedView;
 import pl.kskowronski.views.workers_to_acceptation.WorkersToAcceptationView;
@@ -119,6 +120,7 @@ public class MainView extends AppLayout {
             createTab("Do Akceptacji", WorkersToAcceptationView.class),
             createTab("Zawieszeni", WorkersSuspendedView.class),
             createTab("Po decyzji", WorkersAfterDecisionView.class),
+            createTab("Centra kosztów", CostCentersMapView.class),
             createTab("About", AboutView.class)
         };
     }
