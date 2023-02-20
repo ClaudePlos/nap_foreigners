@@ -1,25 +1,26 @@
 package pl.kskowronski.views.cost_centers_map;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import fr.dudie.nominatim.client.JsonNominatimClient;
 import pl.kskowronski.data.entity.egeria.css.CostCenterDTO;
+import pl.kskowronski.data.entity.egeria.css.CostCenterGeolocation;
+import pl.kskowronski.data.service.egeria.css.CostCenterGeolocationRepo;
 import pl.kskowronski.data.service.egeria.css.CostCentersService;
 import pl.kskowronski.views.main.MainView;
 import software.xdev.vaadin.maps.leaflet.flow.LMap;
-import software.xdev.vaadin.maps.leaflet.flow.data.LCircle;
-import software.xdev.vaadin.maps.leaflet.flow.data.LDivIcon;
-import software.xdev.vaadin.maps.leaflet.flow.data.LIcon;
-import software.xdev.vaadin.maps.leaflet.flow.data.LMarker;
-import software.xdev.vaadin.maps.leaflet.flow.data.LPoint;
-import software.xdev.vaadin.maps.leaflet.flow.data.LPolygon;
+import software.xdev.vaadin.maps.leaflet.flow.data.*;
 
 import fr.dudie.nominatim.model.Address;
 import org.apache.http.client.HttpClient;
@@ -47,8 +48,11 @@ public class CostCentersMapView extends VerticalLayout {
 
     private CostCentersService costCentersService;
 
-    public CostCentersMapView(CostCentersService costCentersService) throws IOException {
+    private CostCenterGeolocationRepo costCenterGeolocationRepo;
+
+    public CostCentersMapView(CostCentersService costCentersService, CostCenterGeolocationRepo costCenterGeolocationRepo) throws IOException {
         this.costCentersService = costCentersService;
+        this.costCenterGeolocationRepo = costCenterGeolocationRepo;
         final SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
         final ClientConnectionManager connexionManager = new SingleClientConnManager(null, registry);
@@ -59,7 +63,26 @@ public class CostCentersMapView extends VerticalLayout {
         this.initMapComponents();
         this.addCostCenterForRekeep();
 
-        add(this.map);
+        HorizontalLayout h01 = new HorizontalLayout();
+
+        Button delete = new Button("Usuń", e ->{
+            List<LComponent> components = this.map.getComponents();
+            components.stream().forEach( c -> {
+                this.map.removeLComponents(c);
+            });
+        });
+
+        Button refresh = new Button("Odśwież", e ->{
+            this.map.removeLComponents();
+            this.addCostCenterForRekeep();
+        });
+
+        Button getData = new Button("Ładuj dane", e ->{
+            this.generateDataLocation();
+        });
+
+        h01.add(delete, refresh, getData);
+        add(h01, this.map);
         this.setSizeFull();
     }
 
@@ -120,6 +143,18 @@ public class CostCentersMapView extends VerticalLayout {
     }
 
     private void addCostCenterForRekeep()  {
+        List<CostCenterGeolocation> costCentersGeo = costCenterGeolocationRepo.findAll();
+
+        costCentersGeo.forEach( c -> {
+            marker = new LMarker(c.getLatitude().doubleValue(), c.getLongitude().doubleValue(), c.getCostCenterCode());
+            marker.setPopup("<p><center><b>" + c.getCostCenterCode() + "</b></center></p><p>" + c.getCostCenterDesc() + "</p>" + c.getDisplayName());
+            this.map.addLComponents(marker);
+        });
+
+    }
+
+    public void generateDataLocation() {
+
         List<CostCenterDTO> costCenters = costCentersService.getAllCostCentersForRekeep("Z");
 
         costCenters.forEach( c -> {
@@ -131,11 +166,18 @@ public class CostCentersMapView extends VerticalLayout {
             }
 
             if (addresses.size() > 0 ) {
-                marker = new LMarker(addresses.get(0).getLatitude(), addresses.get(0).getLongitude(), addresses.get(0).getDisplayName());
-                marker.setPopup("<p><center><b>" + c.getSkKod() + "</b></center></p><p>" + c.getSkDesc() + "</p>" + addresses.get(0).getDisplayName());
-                this.map.addLComponents(marker);
+                CostCenterGeolocation gNew = new CostCenterGeolocation();
+                gNew.setCostCenterCode(c.getSkKod());
+                gNew.setLatitude(BigDecimal.valueOf(addresses.get(0).getLatitude()));
+                gNew.setLongitude(BigDecimal.valueOf(addresses.get(0).getLongitude()));
+                gNew.setDisplayName(addresses.get(0).getDisplayName());
+                gNew.setCity(c.getCity());
+                gNew.setStreet(c.getStreet());
+                gNew.setCostCenterDesc(c.getSkDesc());
+                costCenterGeolocationRepo.save(gNew);
             }
         });
+
 
     }
 }
