@@ -67,13 +67,15 @@ public class CostCentersMapView extends VerticalLayout {
 
         Button delete = new Button("Usuń", e ->{
             List<LComponent> components = this.map.getComponents();
-            components.stream().forEach( c -> {
-                this.map.removeLComponents(c);
-            });
+
+            for (int i = 0; i < components.size(); i++) {
+                this.map.removeLComponents(components.get(i));
+            }
+
         });
 
         Button refresh = new Button("Odśwież", e ->{
-            this.map.removeLComponents();
+            this.map.removeItem();
             this.addCostCenterForRekeep();
         });
 
