@@ -47,7 +47,7 @@ public class WorkGovpl {
     private LocalDate zatDataPrzyj;
 
     @Column(name = "ZAT_DATA_ZMIANY")
-    private String zatDataZmiany;
+    private LocalDate zatDataZmiany;
 
     @Column(name = "STN_NAZWA")
     private String stnNazwa;
@@ -182,11 +182,11 @@ public class WorkGovpl {
         this.zatDataPrzyj = zatDataPrzyj;
     }
 
-    public String getZatDataZmiany() {
+    public LocalDate getZatDataZmiany() {
         return zatDataZmiany;
     }
 
-    public void setZatDataZmiany(String zatDataZmiany) {
+    public void setZatDataZmiany(LocalDate zatDataZmiany) {
         this.zatDataZmiany = zatDataZmiany;
     }
 

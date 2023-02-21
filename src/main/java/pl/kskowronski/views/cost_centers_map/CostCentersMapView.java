@@ -79,7 +79,7 @@ public class CostCentersMapView extends VerticalLayout {
             this.addCostCenterForRekeep();
         });
 
-        Button getData = new Button("Ładuj dane", e ->{
+        Button getData = new Button("Ładuj dane (Nie klikać!)", e ->{
             this.generateDataLocation();
         });
 
