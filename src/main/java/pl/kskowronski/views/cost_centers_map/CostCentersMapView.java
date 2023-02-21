@@ -66,12 +66,7 @@ public class CostCentersMapView extends VerticalLayout {
         HorizontalLayout h01 = new HorizontalLayout();
 
         Button delete = new Button("Usuń", e ->{
-            List<LComponent> components = this.map.getComponents();
-
-            for (int i = 0; i < components.size(); i++) {
-                this.map.removeLComponents(components.get(i));
-            }
-
+            this.clearTheMap();
         });
 
         Button refresh = new Button("Odśwież", e ->{
@@ -181,5 +176,17 @@ public class CostCentersMapView extends VerticalLayout {
         });
 
 
+    }
+
+    private void clearTheMap() {
+        List<LComponent> components = this.map.getComponents();
+        if (components.size() == 0 ) {
+            return;
+        } else {
+            for (int i = 0; i < components.size(); i++) {
+                this.map.removeLComponents(components.get(i));
+            }
+            this.clearTheMap();
+        }
     }
 }
