@@ -9,10 +9,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "NAP_FOREIGNERS_PRACAGOV\n")
+@Table(name = "NAP_FOREIGNERS_PRACAGOV")
 public class WorkGovpl {
 
+
     @Id
+    @Column(name = "ID")
+    private BigDecimal id;
+
     @Column(name = "PRC_NUMER")
     private BigDecimal prcNumer;
 
@@ -91,7 +95,18 @@ public class WorkGovpl {
     @Column(name = "ZAT_STAWKA")
     private String zatStawka;
 
+    @Column(name = "FRM_NAZWA")
+    private String frmNazwa;
+
     public WorkGovpl() {
+    }
+
+    public BigDecimal getId() {
+        return id;
+    }
+
+    public void setId(BigDecimal id) {
+        this.id = id;
     }
 
     public BigDecimal getPrcNumer() {
@@ -300,5 +315,13 @@ public class WorkGovpl {
 
     public void setZatStawka(String zatStawka) {
         this.zatStawka = zatStawka;
+    }
+
+    public String getFrmNazwa() {
+        return frmNazwa;
+    }
+
+    public void setFrmNazwa(String frmNazwa) {
+        this.frmNazwa = frmNazwa;
     }
 }

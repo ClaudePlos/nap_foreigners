@@ -1,6 +1,5 @@
 package pl.kskowronski.views.work_gov_pl;
 
-import ar.com.fdvs.dj.domain.AutoText;
 import ar.com.fdvs.dj.domain.Style;
 import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
 import ar.com.fdvs.dj.domain.builders.StyleBuilder;
@@ -8,11 +7,13 @@ import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.Page;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.StreamResource;
+import org.springframework.data.domain.Sort;
 import org.vaadin.reports.PrintPreviewReport;
 import pl.kskowronski.data.entity.egeria.ek.WorkGovpl;
 import pl.kskowronski.data.service.egeria.ek.WorkGovplRepo;
@@ -20,10 +21,8 @@ import pl.kskowronski.views.main.MainView;
 import com.vaadin.flow.component.button.Button;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,36 +51,41 @@ public class WorkGovPlView extends VerticalLayout {
             this.getDataFromDB();
         });
 
-        grid.addColumn(WorkGovpl::getPrcNumer).setHeader("Numer");
-        grid.addColumn(WorkGovpl::getPrcImie).setHeader("Imie");
-        grid.addColumn(WorkGovpl::getPrcImie2).setHeader("Imie2");
-        grid.addColumn(WorkGovpl::getPrcNazwisko).setHeader("PrcNazwisko");
-        grid.addColumn(WorkGovpl::getPrcPlec).setHeader("PrcPlec");
-        grid.addColumn(WorkGovpl::getPrcDataUr).setHeader("PrcDataUr");
-        grid.addColumn(WorkGovpl::getPrcPesel).setHeader("PrcPesel");
-        grid.addColumn(WorkGovpl::getPrcObywatelstwo).setHeader("PrcObywatelstwo");
-        grid.addColumn(WorkGovpl::getPrcPaszport).setHeader("PrcPaszport");
-        grid.addColumn(WorkGovpl::getPrcDowodOsob).setHeader("PrcDowodOsob");
-        grid.addColumn(WorkGovpl::getZatDataPrzyj).setHeader("ZatDataPrzyj");
-        grid.addColumn(WorkGovpl::getZatDataZmiany).setHeader("ZatDataZmiany");
-        grid.addColumn(WorkGovpl::getStnNazwa).setHeader("StnNazwa");
-        grid.addColumn(WorkGovpl::getKodZawodu).setHeader("KodZawodu");
-        grid.addColumn(WorkGovpl::getRodzajUmowy).setHeader("RodzajUmowy");
-        grid.addColumn(WorkGovpl::getSkKod).setHeader("SkKod");
-        grid.addColumn(WorkGovpl::getAdrKodPocztowy).setHeader("AdrKodPocztowy");
-        grid.addColumn(WorkGovpl::getWojewodztwo).setHeader("Wojewodztwo");
-        grid.addColumn(WorkGovpl::getAdrGmina).setHeader("AdrGmina");
-        grid.addColumn(WorkGovpl::getAdrUlica).setHeader("AdrUlica");
-        grid.addColumn(WorkGovpl::getAdrPowiat).setHeader("AdrPowiat");
-        grid.addColumn(WorkGovpl::getAdrMiejscowosc).setHeader("AdrMiejscowosc");
-        grid.addColumn(WorkGovpl::getAdrNumberDomu).setHeader("AdrNumberDomu");
-        grid.addColumn(WorkGovpl::getAdrNumerLokalu).setHeader("AdrNumerLokalu");
-        grid.addColumn(WorkGovpl::getEtat).setHeader("Etat");
-        grid.addColumn(WorkGovpl::getZatStawka).setHeader("ZatStawka");
+        Button buttRefresh = new Button("Odśwież", e -> {
+            this.getDataFromDB();
+        });
+
+        grid.addColumn(WorkGovpl::getFrmNazwa).setHeader("Firma").setResizable(true);
+        grid.addColumn(WorkGovpl::getPrcNumer).setHeader("Numer").setResizable(true);
+        grid.addColumn(WorkGovpl::getPrcImie).setHeader("Imie").setResizable(true);
+        grid.addColumn(WorkGovpl::getPrcImie2).setHeader("Imie2").setResizable(true);
+        grid.addColumn(WorkGovpl::getPrcNazwisko).setHeader("PrcNazwisko").setResizable(true);
+        grid.addColumn(WorkGovpl::getPrcPlec).setHeader("PrcPlec").setResizable(true);
+        grid.addColumn(WorkGovpl::getPrcDataUr).setHeader("PrcDataUr").setResizable(true);
+        grid.addColumn(WorkGovpl::getPrcPesel).setHeader("PrcPesel").setResizable(true);
+        grid.addColumn(WorkGovpl::getPrcObywatelstwo).setHeader("PrcObywatelstwo").setResizable(true);
+        grid.addColumn(WorkGovpl::getPrcPaszport).setHeader("PrcPaszport").setResizable(true);
+        grid.addColumn(WorkGovpl::getPrcDowodOsob).setHeader("PrcDowodOsob").setResizable(true);
+        grid.addColumn(WorkGovpl::getZatDataPrzyj).setHeader("ZatDataPrzyj").setResizable(true);
+        grid.addColumn(WorkGovpl::getZatDataZmiany).setHeader("ZatDataZmiany").setResizable(true);
+        grid.addColumn(WorkGovpl::getStnNazwa).setHeader("StnNazwa").setResizable(true);
+        grid.addColumn(WorkGovpl::getKodZawodu).setHeader("KodZawodu").setResizable(true);
+        grid.addColumn(WorkGovpl::getRodzajUmowy).setHeader("RodzajUmowy").setResizable(true);
+        grid.addColumn(WorkGovpl::getSkKod).setHeader("SkKod").setResizable(true);
+        grid.addColumn(WorkGovpl::getAdrKodPocztowy).setHeader("AdrKodPocztowy").setResizable(true);
+        grid.addColumn(WorkGovpl::getWojewodztwo).setHeader("Wojewodztwo").setResizable(true);
+        grid.addColumn(WorkGovpl::getAdrGmina).setHeader("AdrGmina").setResizable(true);
+        grid.addColumn(WorkGovpl::getAdrUlica).setHeader("AdrUlica").setResizable(true);
+        grid.addColumn(WorkGovpl::getAdrPowiat).setHeader("AdrPowiat").setResizable(true);
+        grid.addColumn(WorkGovpl::getAdrMiejscowosc).setHeader("AdrMiejscowosc").setResizable(true);
+        grid.addColumn(WorkGovpl::getAdrNumberDomu).setHeader("AdrNumberDomu").setResizable(true);
+        grid.addColumn(WorkGovpl::getAdrNumerLokalu).setHeader("AdrNumerLokalu").setResizable(true);
+        grid.addColumn(WorkGovpl::getEtat).setHeader("Etat").setResizable(true);
+        grid.addColumn(WorkGovpl::getZatStawka).setHeader("ZatStawka").setResizable(true);
 
 
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
-        add(clearTable, grid);
+        add(new HorizontalLayout(clearTable, buttRefresh), grid);
 
         grid.addSelectionListener(selection -> {
             try {
@@ -107,6 +111,7 @@ public class WorkGovPlView extends VerticalLayout {
 //                .addAutoText("For internal use only", AutoText.POSITION_HEADER, AutoText.ALIGMENT_LEFT, 1200, headerStyle)
 //                .addAutoText(LocalDateTime.now().toString(), AutoText.POSITION_HEADER, AutoText.ALIGNMENT_RIGHT, 1200, headerStyle)
 //                .addAutoText(AutoText.AUTOTEXT_PAGE_X_OF_Y, AutoText.POSITION_HEADER, AutoText.ALIGNMENT_RIGHT, 1200, 100, headerStyle)
+                .addColumn(ColumnBuilder.getNew().setColumnProperty("frmNazwa", String.class).setFixedWidth(true).setTitle("Firma").setStyle(headerStyle).build())
                 .addColumn(ColumnBuilder.getNew().setColumnProperty("prcNumer", BigDecimal.class).setFixedWidth(true).setTitle("Numer").build())
                 .addColumn(ColumnBuilder.getNew().setColumnProperty("prcImie", String.class).setFixedWidth(true).setTitle("Imie").build())
                 .addColumn(ColumnBuilder.getNew().setColumnProperty("prcImie2", String.class).setFixedWidth(true).setTitle("Imie2").build())
@@ -135,7 +140,7 @@ public class WorkGovPlView extends VerticalLayout {
                 .addColumn(ColumnBuilder.getNew().setColumnProperty("zatStawka", String.class).setFixedWidth(true).setTitle("Stawka").build())
         ;
 
-        excel = report.getStreamResource("obcokrajowcy.xls", workGovplRepo::findAll, PrintPreviewReport.Format.XLS);
+        excel = report.getStreamResource("obcokrajowcy_egeria.xls", workGovplRepo::findAll, PrintPreviewReport.Format.XLS);
 
 
         this.getDataFromDB();
@@ -143,7 +148,7 @@ public class WorkGovPlView extends VerticalLayout {
     }
 
     private void getDataFromDB() {
-        List<WorkGovpl> list = workGovplRepo.findAll();
+        List<WorkGovpl> list = workGovplRepo.findAll(Sort.by(Sort.Direction.ASC, "frmNazwa", "prcNazwisko"));
         grid.setItems(list);
     }
 
@@ -156,7 +161,7 @@ public class WorkGovPlView extends VerticalLayout {
 
 
 
-        excel = report.getStreamResource("obcokrajowcy.xls", workGovplRepo::findAll, PrintPreviewReport.Format.XLS);
+        excel = report.getStreamResource("obcokrajowcy_egeria.xls", workGovplRepo::findAll, PrintPreviewReport.Format.XLS);
 
         report.setItems(listToExcel);
 

@@ -8,8 +8,12 @@ import java.util.Optional;
 import java.util.Properties;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -70,15 +74,33 @@ public class CostCentersMapView extends VerticalLayout {
         });
 
         Button refresh = new Button("Odśwież", e ->{
-            this.map.removeItem();
             this.addCostCenterForRekeep();
         });
+        refresh.setWidth("100px");
 
-        Button getData = new Button("Ładuj dane (Nie klikać!)", e ->{
+        Button buttGetData = new Button("Ładuj dane (Nie klikać!)", e ->{
             this.generateDataLocation();
         });
+        buttGetData.setWidth("250px");
 
-        h01.add(delete, refresh, getData);
+        TextField searchField = new TextField();
+        searchField.setWidth("50%");
+        searchField.setPlaceholder("Search SK");
+        searchField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
+        searchField.setValueChangeMode(ValueChangeMode.EAGER);
+        searchField.addValueChangeListener(e -> {
+            if (searchField.getValue().length() == 4) {
+                this.clearTheMap();
+                Optional<CostCenterGeolocation> costCentersGeo = costCenterGeolocationRepo.findById(searchField.getValue());
+                if (costCentersGeo.isPresent()) {
+                    marker = new LMarker(costCentersGeo.get().getLatitude().doubleValue(), costCentersGeo.get().getLongitude().doubleValue(), costCentersGeo.get().getCostCenterCode());
+                    marker.setPopup("<p><center><b>" + costCentersGeo.get().getCostCenterCode() + "</b></center></p><p>" + costCentersGeo.get().getCostCenterDesc() + "</p>" + costCentersGeo.get().getDisplayName());
+                    this.map.addLComponents(marker);
+                }
+            }
+        });
+
+        h01.add(delete, refresh, buttGetData, searchField);
         add(h01, this.map);
         this.setSizeFull();
     }
