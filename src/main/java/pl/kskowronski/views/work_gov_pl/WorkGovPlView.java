@@ -19,6 +19,9 @@ import com.vaadin.flow.component.button.Button;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +34,7 @@ public class WorkGovPlView extends VerticalLayout {
     private Grid<WorkGovpl> grid = new Grid<>(WorkGovpl.class, false);
 
     private List<WorkGovpl> listToExcel = new ArrayList<>();
+    private DateTimeFormatter dtDDMMYYYY = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 
     private Anchor a;
@@ -128,8 +132,8 @@ public class WorkGovPlView extends VerticalLayout {
         CSVWriter csvWriter = new CSVWriter(stringWriter);
         csvWriter.setSeparatorChar(';');
         csvWriter.writeNext("Firma", "Numer", "Imie", "Imie2", "Nazwisko", "Plec", "DataUr", "Pesel", "Obywatelstwo", "Paszport", "DowodOsob", "DataPrzyj", "DataZmiany", "Stanowisko", "KodZawodu", "RodzajUmowy", "SkKod", "KodPocztowy", "Wojewodztwo", "Gmina", "Ulica", "Powiat", "Miejscowosc", "NumDomu", "NumLokalu", "Etat", "Stawka");
-        listToExcel.forEach(c -> csvWriter.writeNext("" + c.getFrmNazwa(), c.getPrcNumer().toString(), c.getPrcImie(), c.getPrcImie2() , c.getPrcNazwisko() , c.getPrcPlec(), c.getPrcDataUr().toString() , c.getPrcPesel() , c.getPrcObywatelstwo() , c.getPrcPaszport()
-                ,  c.getPrcDowodOsob() , c.getZatDataPrzyj().toString(), c.getZatDataZmiany().toString() , c.getStnNazwa() , c.getKodZawodu() , c.getRodzajUmowy() , c.getSkKod() , c.getAdrKodPocztowy()
+        listToExcel.forEach(c -> csvWriter.writeNext("" + c.getFrmNazwa(), c.getPrcNumer().toString(), c.getPrcImie(), c.getPrcImie2() , c.getPrcNazwisko() , c.getPrcPlec(), dtDDMMYYYY.format(c.getPrcDataUr()) , c.getPrcPesel() , c.getPrcObywatelstwo() , c.getPrcPaszport()
+                ,  c.getPrcDowodOsob() , dtDDMMYYYY.format(c.getZatDataPrzyj()), dtDDMMYYYY.format(c.getZatDataZmiany()) , c.getStnNazwa() , c.getKodZawodu() , c.getRodzajUmowy() , c.getSkKod() , c.getAdrKodPocztowy()
                 , c.getWojewodztwo() , c.getAdrGmina() , c.getAdrUlica() , c.getAdrPowiat() , c.getAdrMiejscowosc() , c.getAdrNumberDomu() , c.getAdrNumerLokalu(), c.getEtat() , c.getZatStawka() + "" ));
 
         try {
@@ -139,6 +143,5 @@ public class WorkGovPlView extends VerticalLayout {
         }
 
     }
-
 
 }
