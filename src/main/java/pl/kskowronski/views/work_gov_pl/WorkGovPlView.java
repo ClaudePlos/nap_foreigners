@@ -5,6 +5,7 @@ import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
 import ar.com.fdvs.dj.domain.builders.StyleBuilder;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.Page;
+import com.helger.commons.csv.CSVWriter;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -13,6 +14,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.StreamResource;
+import org.apache.commons.io.IOUtils;
 import org.springframework.data.domain.Sort;
 import org.vaadin.reports.PrintPreviewReport;
 import pl.kskowronski.data.entity.egeria.ek.WorkGovpl;
@@ -21,10 +23,14 @@ import pl.kskowronski.views.main.MainView;
 import com.vaadin.flow.component.button.Button;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Route(value = "work_gov_pl", layout = MainView.class)
 @PageTitle("praca.gov.pl")
@@ -55,6 +61,11 @@ public class WorkGovPlView extends VerticalLayout {
             this.getDataFromDB();
         });
 
+
+
+
+
+
         grid.addColumn(WorkGovpl::getFrmNazwa).setHeader("Firma").setResizable(true);
         grid.addColumn(WorkGovpl::getPrcNumer).setHeader("Numer").setResizable(true);
         grid.addColumn(WorkGovpl::getPrcImie).setHeader("Imie").setResizable(true);
@@ -82,6 +93,9 @@ public class WorkGovPlView extends VerticalLayout {
         grid.addColumn(WorkGovpl::getAdrNumerLokalu).setHeader("AdrNumerLokalu").setResizable(true);
         grid.addColumn(WorkGovpl::getEtat).setHeader("Etat").setResizable(true);
         grid.addColumn(WorkGovpl::getZatStawka).setHeader("ZatStawka").setResizable(true);
+
+
+
 
 
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
@@ -143,8 +157,14 @@ public class WorkGovPlView extends VerticalLayout {
         excel = report.getStreamResource("obcokrajowcy_egeria.xls", workGovplRepo::findAll, PrintPreviewReport.Format.XLS);
 
 
+
         this.getDataFromDB();
         setPadding(false);
+
+        Anchor anchor = new Anchor(new StreamResource("grid.csv", this::getInputStream), "Export as CSV");
+        anchor.getElement().setAttribute("download", true);
+        add(anchor);
+
     }
 
     private void getDataFromDB() {
@@ -170,7 +190,29 @@ public class WorkGovPlView extends VerticalLayout {
             remove(a);
         }
 
-        a = new Anchor(excel,"EXCEL");
-        add(a);
+//        a = new Anchor(new StreamResource("obcokrajowcy_egeria.csv", this::getInputStream), "Export do CSV");
+//        a.getElement().setAttribute("download", true);
+//        add(a);
     }
+
+
+    private InputStream getInputStream() {
+
+        StringWriter stringWriter = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(stringWriter);
+        csvWriter.setSeparatorChar(';');
+        csvWriter.writeNext("Firma", "Numer", "Imie", "Imie2", "Nazwisko", "Plec", "DataUr", "Pesel", "Obywatelstwo", "Paszport", "DowodOsob", "DataPrzyj", "DataZmiany", "Stanowisko", "KodZawodu", "RodzajUmowy", "SkKod", "KodPocztowy", "Wojewodztwo", "Gmina", "Ulica", "Powiat", "Miejscowosc", "NumDomu", "NumLokalu", "Etat", "Stawka");
+        listToExcel.forEach(c -> csvWriter.writeNext("" + c.getFrmNazwa(), c.getPrcNumer().toString(), c.getPrcImie(), c.getPrcImie2() , c.getPrcNazwisko() , c.getPrcPlec(), c.getPrcDataUr().toString() , c.getPrcPesel() , c.getPrcObywatelstwo() , c.getPrcPaszport()
+                ,  c.getPrcDowodOsob() , c.getZatDataPrzyj().toString(), c.getZatDataZmiany().toString() , c.getStnNazwa() , c.getKodZawodu() , c.getRodzajUmowy() , c.getSkKod() , c.getAdrKodPocztowy()
+                , c.getWojewodztwo() , c.getAdrGmina() , c.getAdrUlica() , c.getAdrPowiat() , c.getAdrMiejscowosc() , c.getAdrNumberDomu() , c.getAdrNumerLokalu(), c.getEtat() , c.getZatStawka() + "" ));
+
+        try {
+            return IOUtils.toInputStream(stringWriter.toString(), "UTF-8");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
 }
