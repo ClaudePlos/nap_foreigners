@@ -1,10 +1,5 @@
 package pl.kskowronski.views.work_gov_pl;
 
-import ar.com.fdvs.dj.domain.Style;
-import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
-import ar.com.fdvs.dj.domain.builders.StyleBuilder;
-import ar.com.fdvs.dj.domain.constants.Font;
-import ar.com.fdvs.dj.domain.constants.Page;
 import com.helger.commons.csv.CSVWriter;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
@@ -16,7 +11,6 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.StreamResource;
 import org.apache.commons.io.IOUtils;
 import org.springframework.data.domain.Sort;
-import org.vaadin.reports.PrintPreviewReport;
 import pl.kskowronski.data.entity.egeria.ek.WorkGovpl;
 import pl.kskowronski.data.service.egeria.ek.WorkGovplRepo;
 import pl.kskowronski.views.main.MainView;
@@ -24,13 +18,9 @@ import com.vaadin.flow.component.button.Button;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Route(value = "work_gov_pl", layout = MainView.class)
 @PageTitle("praca.gov.pl")
@@ -41,11 +31,6 @@ public class WorkGovPlView extends VerticalLayout {
     private Grid<WorkGovpl> grid = new Grid<>(WorkGovpl.class, false);
 
     private List<WorkGovpl> listToExcel = new ArrayList<>();
-    private StreamResource excel;
-    private PrintPreviewReport report = new PrintPreviewReport<>(
-    );
-
-
 
 
     private Anchor a;
@@ -60,9 +45,6 @@ public class WorkGovPlView extends VerticalLayout {
         Button buttRefresh = new Button("Odśwież", e -> {
             this.getDataFromDB();
         });
-
-
-
 
 
 
@@ -109,61 +91,9 @@ public class WorkGovPlView extends VerticalLayout {
             }
         });
 
-  //    WorkGovpl.class,"prcNumer","prcImie","prcImie2","prcNazwisko"
-//            ,"prcPlec","prcDataUr","prcPesel","prcObywatelstwo","prcPaszport","prcDowodOsob","zatDataPrzyj","zatDataZmiany","stnNazwa"
-//            ,"kodZawodu","rodzajUmowy","skKod","adrKodPocztowy","wojewodztwo","adrGmina","adrUlica"
-//            ,"adrPowiat","adrMiejscowosc","adrNumberDomu","adrNumerLokalu","etat","zatStawka"
-        Style headerStyle = new StyleBuilder(true).setFont(Font.ARIAL_MEDIUM).build();
-
-
-        report.getReportBuilder()
-//                .setMargins(20, 20, 40, 40)
-//                .setAllowDetailSplit(true)
-//                .setUseFullPageWidth(true)
-                .setPageSizeAndOrientation(Page.Page_Legal_Landscape())
-//                .setTitle("Call report")
-//                .addAutoText("For internal use only", AutoText.POSITION_HEADER, AutoText.ALIGMENT_LEFT, 1200, headerStyle)
-//                .addAutoText(LocalDateTime.now().toString(), AutoText.POSITION_HEADER, AutoText.ALIGNMENT_RIGHT, 1200, headerStyle)
-//                .addAutoText(AutoText.AUTOTEXT_PAGE_X_OF_Y, AutoText.POSITION_HEADER, AutoText.ALIGNMENT_RIGHT, 1200, 100, headerStyle)
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("frmNazwa", String.class).setFixedWidth(true).setTitle("Firma").setStyle(headerStyle).build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("prcNumer", BigDecimal.class).setFixedWidth(true).setTitle("Numer").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("prcImie", String.class).setFixedWidth(true).setTitle("Imie").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("prcImie2", String.class).setFixedWidth(true).setTitle("Imie2").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("prcNazwisko", String.class).setFixedWidth(true).setTitle("Nazwisko").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("prcPlec", String.class).setFixedWidth(true).setTitle("Plec").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("prcDataUr", LocalDate.class).setFixedWidth(true).setTitle("DataUr").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("prcPesel", String.class).setFixedWidth(true).setTitle("Pesel").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("prcObywatelstwo", String.class).setFixedWidth(true).setTitle("Obywatelstwo").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("prcPaszport", String.class).setFixedWidth(true).setTitle("Paszport").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("prcDowodOsob", String.class).setFixedWidth(true).setTitle("DowodOsob").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("zatDataPrzyj", LocalDate.class).setFixedWidth(true).setTitle("DataPrzyj").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("zatDataZmiany", LocalDate.class).setFixedWidth(true).setTitle("DataZmiany").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("stnNazwa", String.class).setFixedWidth(true).setTitle("Stanowisko").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("kodZawodu", String.class).setFixedWidth(true).setTitle("KodZawodu").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("rodzajUmowy", String.class).setFixedWidth(true).setTitle("RodzajUmowy").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("skKod", String.class).setFixedWidth(true).setTitle("SkKod").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("adrKodPocztowy", String.class).setFixedWidth(true).setTitle("KodPocztowy").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("wojewodztwo", String.class).setFixedWidth(true).setTitle("Wojewodztwo").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("adrGmina", String.class).setFixedWidth(true).setTitle("Gmina").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("adrUlica", String.class).setFixedWidth(true).setTitle("Ulica").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("adrPowiat", String.class).setFixedWidth(true).setTitle("Powiat").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("adrMiejscowosc", String.class).setFixedWidth(true).setTitle("Miejscowosc").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("adrNumberDomu", String.class).setFixedWidth(true).setTitle("NumDomu").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("adrNumerLokalu", String.class).setFixedWidth(true).setTitle("NumLokalu").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("etat", String.class).setFixedWidth(true).setTitle("Etat").build())
-                .addColumn(ColumnBuilder.getNew().setColumnProperty("zatStawka", String.class).setFixedWidth(true).setTitle("Stawka").build())
-        ;
-
-        excel = report.getStreamResource("obcokrajowcy_egeria.xls", workGovplRepo::findAll, PrintPreviewReport.Format.XLS);
-
-
 
         this.getDataFromDB();
         setPadding(false);
-
-        Anchor anchor = new Anchor(new StreamResource("grid.csv", this::getInputStream), "Export as CSV");
-        anchor.getElement().setAttribute("download", true);
-        add(anchor);
 
     }
 
@@ -181,18 +111,14 @@ public class WorkGovPlView extends VerticalLayout {
 
 
 
-        excel = report.getStreamResource("obcokrajowcy_egeria.xls", workGovplRepo::findAll, PrintPreviewReport.Format.XLS);
-
-        report.setItems(listToExcel);
-
-
         if (a != null){
             remove(a);
         }
 
-//        a = new Anchor(new StreamResource("obcokrajowcy_egeria.csv", this::getInputStream), "Export do CSV");
-//        a.getElement().setAttribute("download", true);
-//        add(a);
+        a = new Anchor(new StreamResource("obcokrajowcy_egeria.csv", this::getInputStream), "Export do CSV");
+        a.getElement().setAttribute("download", true);
+
+        add(a);
     }
 
 
