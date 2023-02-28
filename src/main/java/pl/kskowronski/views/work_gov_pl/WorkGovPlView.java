@@ -12,7 +12,9 @@ import com.vaadin.flow.server.StreamResource;
 import org.apache.commons.io.IOUtils;
 import org.springframework.data.domain.Sort;
 import pl.kskowronski.data.entity.egeria.ek.WorkGovpl;
+import pl.kskowronski.data.entity.egeria.ek.WorkStatisticDTO;
 import pl.kskowronski.data.service.egeria.ek.WorkGovplRepo;
+import pl.kskowronski.data.service.egeria.ek.WorkGovplService;
 import pl.kskowronski.views.main.MainView;
 import com.vaadin.flow.component.button.Button;
 
@@ -30,19 +32,20 @@ import java.util.List;
 @RouteAlias(value = "work_gov_pl", layout = MainView.class)
 public class WorkGovPlView extends VerticalLayout {
 
-    private WorkGovplRepo workGovplRepo;
+    private WorkGovplService workGovplService;
     private Grid<WorkGovpl> grid = new Grid<>(WorkGovpl.class, false);
+    private Grid<WorkStatisticDTO> gridStat = new Grid<>(WorkStatisticDTO.class, false);
 
     private List<WorkGovpl> listToExcel = new ArrayList<>();
     private DateTimeFormatter dtDDMMYYYY = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 
     private Anchor a;
-    public WorkGovPlView(WorkGovplRepo workGovplRepo) {
-        this.workGovplRepo = workGovplRepo;
+    public WorkGovPlView(WorkGovplService workGovplService) {
+        this.workGovplService = workGovplService;
 
         Button clearTable = new Button("Czyść tabelę", e -> {
-            workGovplRepo.deleteAll();
+            workGovplService.deleteAll();
             this.getDataFromDB();
         });
 
@@ -81,11 +84,13 @@ public class WorkGovPlView extends VerticalLayout {
         grid.addColumn(WorkGovpl::getZatStawka).setHeader("ZatStawka").setResizable(true);
 
 
-
+        gridStat.addColumn(WorkStatisticDTO::getFrmName).setHeader("Firma").setResizable(true);
+        gridStat.addColumn(WorkStatisticDTO::getTypeOfAgreement).setHeader("Typ Umowy").setResizable(true);
+        gridStat.addColumn(WorkStatisticDTO::getWorkersSum).setHeader("Ilość").setResizable(true);
 
 
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
-        add(new HorizontalLayout(clearTable, buttRefresh), grid);
+        add(new HorizontalLayout(clearTable, buttRefresh), grid, gridStat);
 
         grid.addSelectionListener(selection -> {
             try {
@@ -99,10 +104,13 @@ public class WorkGovPlView extends VerticalLayout {
         this.getDataFromDB();
         setPadding(false);
 
+        List<WorkStatisticDTO> list = workGovplService.getListToStatistic();
+        gridStat.setItems(list);
+
     }
 
     private void getDataFromDB() {
-        List<WorkGovpl> list = workGovplRepo.findAll(Sort.by(Sort.Direction.ASC, "frmNazwa", "prcNazwisko"));
+        List<WorkGovpl> list = workGovplService.findAll();
         grid.setItems(list);
     }
 
@@ -134,7 +142,7 @@ public class WorkGovPlView extends VerticalLayout {
         csvWriter.writeNext("Firma", "Numer", "Imie", "Imie2", "Nazwisko", "Plec", "DataUr", "Pesel", "Obywatelstwo", "Paszport", "DowodOsob", "DataPrzyj", "DataZmiany", "Stanowisko", "KodZawodu", "RodzajUmowy", "SkKod", "KodPocztowy", "Wojewodztwo", "Gmina", "Ulica", "Powiat", "Miejscowosc", "NumDomu", "NumLokalu", "Etat", "Stawka");
         listToExcel.forEach(c -> csvWriter.writeNext("" + c.getFrmNazwa(), c.getPrcNumer().toString(), c.getPrcImie(), c.getPrcImie2() , c.getPrcNazwisko() , c.getPrcPlec(), dtDDMMYYYY.format(c.getPrcDataUr()) , c.getPrcPesel() , c.getPrcObywatelstwo() , c.getPrcPaszport()
                 ,  c.getPrcDowodOsob() , dtDDMMYYYY.format(c.getZatDataPrzyj()), dtDDMMYYYY.format(c.getZatDataZmiany()) , c.getStnNazwa() , c.getKodZawodu() , c.getRodzajUmowy() , c.getSkKod() , c.getAdrKodPocztowy()
-                , c.getWojewodztwo() , c.getAdrGmina() , c.getAdrUlica() , c.getAdrPowiat() , c.getAdrMiejscowosc() , c.getAdrNumberDomu() , c.getAdrNumerLokalu(), c.getEtat() , c.getZatStawka() + "" ));
+                , c.getWojewodztwo() , c.getAdrGmina() , c.getAdrUlica() , c.getAdrPowiat() , c.getAdrMiejscowosc() , c.getAdrNumberDomu() , c.getAdrNumerLokalu(), c.getEtat() , c.getZatStawka().replace(".",",") + "" ));
 
         try {
             return IOUtils.toInputStream(stringWriter.toString(), "UTF-8");
