@@ -5,6 +5,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -43,6 +44,8 @@ public class WorkGovPlView extends VerticalLayout {
     private Anchor a;
     public WorkGovPlView(WorkGovplService workGovplService) {
         this.workGovplService = workGovplService;
+
+        setHeightFull();
 
         grid.setHeight("50%");
         gridStat.setHeight("50%");
@@ -146,6 +149,13 @@ public class WorkGovPlView extends VerticalLayout {
         listToExcel.forEach(c -> csvWriter.writeNext("" + c.getFrmNazwa(), c.getPrcNumer().toString(), c.getPrcImie(), c.getPrcImie2() , c.getPrcNazwisko() , c.getPrcPlec(), dtDDMMYYYY.format(c.getPrcDataUr()) , c.getPrcPesel() , c.getPrcObywatelstwo() , c.getPrcPaszport()
                 ,  c.getPrcDowodOsob() , dtDDMMYYYY.format(c.getZatDataPrzyj()), dtDDMMYYYY.format(c.getZatDataZmiany()) , c.getStnNazwa() , c.getKodZawodu() , c.getRodzajUmowy() , c.getSkKod() , c.getAdrKodPocztowy()
                 , c.getWojewodztwo() , c.getAdrGmina() , c.getAdrUlica() , c.getAdrPowiat() , c.getAdrMiejscowosc() , c.getAdrNumberDomu() , c.getAdrNumerLokalu(), c.getEtat() , c.getZatStawka().replace(".",",") + "" ));
+
+        csvWriter.writeNext("");
+        csvWriter.writeNext("Firma", "TypUmowy", "Ilość");
+        ((ListDataProvider<WorkStatisticDTO>)gridStat.getDataProvider()).getItems()
+                .forEach(s -> csvWriter.writeNext("" + s.getFrmName(), s.getTypeOfAgreement(), s.getWorkersSum() + ""));
+
+
 
         try {
             return IOUtils.toInputStream(stringWriter.toString(), "UTF-8");
