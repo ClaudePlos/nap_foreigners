@@ -44,6 +44,9 @@ public class WorkGovPlView extends VerticalLayout {
     public WorkGovPlView(WorkGovplService workGovplService) {
         this.workGovplService = workGovplService;
 
+        grid.setHeight("50%");
+        gridStat.setHeight("50%");
+
         Button clearTable = new Button("Czyść tabelę", e -> {
             workGovplService.deleteAll();
             this.getDataFromDB();
