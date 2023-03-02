@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Route(value = "work_gov_pl", layout = MainView.class)
 @PageTitle("praca.gov.pl")
@@ -43,7 +44,6 @@ public class WorkGovPlView extends VerticalLayout {
 
     private Anchor a;
 
-    private Anchor aS;
     public WorkGovPlView(WorkGovplService workGovplService) {
         this.workGovplService = workGovplService;
 
@@ -116,11 +116,6 @@ public class WorkGovPlView extends VerticalLayout {
         List<WorkStatisticDTO> list = workGovplService.getListToStatistic();
         gridStat.setItems(list);
 
-        aS = new Anchor(new StreamResource("obcokrajowcy_stat.csv", this::getInputStreamStatistic), "Export Stat");
-        aS.getElement().setAttribute("download", true);
-
-        add(aS);
-
     }
 
     private void getDataFromDB() {
@@ -153,10 +148,22 @@ public class WorkGovPlView extends VerticalLayout {
         StringWriter stringWriter = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(stringWriter);
         csvWriter.setSeparatorChar(';');
-        csvWriter.writeNext("Firma", "Numer", "Imie", "Imie2", "Nazwisko", "Plec", "DataUr", "Pesel", "Obywatelstwo", "Paszport", "DowodOsob", "DataPrzyj", "DataZmiany", "Stanowisko", "KodZawodu", "RodzajUmowy", "SkKod", "KodPocztowy", "Wojewodztwo", "Gmina", "Ulica", "Powiat", "Miejscowosc", "NumDomu", "NumLokalu", "Etat", "Stawka","TypUmowy");
-        listToExcel.forEach(c -> csvWriter.writeNext("" + c.getFrmNazwa(), c.getPrcNumer().toString(), c.getPrcImie(), c.getPrcImie2() , c.getPrcNazwisko() , c.getPrcPlec(), dtDDMMYYYY.format(c.getPrcDataUr()) , c.getPrcPesel() , c.getPrcObywatelstwo() , c.getPrcPaszport()
-                ,  c.getPrcDowodOsob() , dtDDMMYYYY.format(c.getZatDataPrzyj()), dtDDMMYYYY.format(c.getZatDataZmiany()) , c.getStnNazwa() , c.getKodZawodu() , c.getRodzajUmowy() , c.getSkKod() , c.getAdrKodPocztowy()
-                , c.getWojewodztwo() , c.getAdrGmina() , c.getAdrUlica() , c.getAdrPowiat() , c.getAdrMiejscowosc() , c.getAdrNumberDomu() , c.getAdrNumerLokalu(), c.getEtat() , c.getZatStawka().replace(".",","), c.getTypUmowy() + "" ));
+        csvWriter.writeNext("Firma", "Numer", "Imie", "Imie2", "Nazwisko", "Plec", "DataUr", "Pesel", "Obywatelstwo", "Paszport", "DowodOsob", "DataPrzyj", "DataZmiany", "Stanowisko", "KodZawodu", "RodzajUmowy", "SkKod", "KodPocztowy", "Wojewodztwo", "Gmina", "Ulica", "Powiat", "Miejscowosc", "NumDomu", "NumLokalu", "Etat", "Stawka","TypUmowy","IloscUP","IloscUZ");
+        listToExcel.forEach(c -> {
+            csvWriter.writeNext("" + c.getFrmNazwa(), c.getPrcNumer().toString(), c.getPrcImie(), c.getPrcImie2() , c.getPrcNazwisko() , c.getPrcPlec(), dtDDMMYYYY.format(c.getPrcDataUr()) , c.getPrcPesel() , c.getPrcObywatelstwo() , c.getPrcPaszport()
+                    ,  c.getPrcDowodOsob() , dtDDMMYYYY.format(c.getZatDataPrzyj()), dtDDMMYYYY.format(c.getZatDataZmiany()) , c.getStnNazwa() , c.getKodZawodu() , c.getRodzajUmowy() , c.getSkKod() , c.getAdrKodPocztowy()
+                    , c.getWojewodztwo() , c.getAdrGmina() , c.getAdrUlica() , c.getAdrPowiat() , c.getAdrMiejscowosc() , c.getAdrNumberDomu() , c.getAdrNumerLokalu(), c.getEtat() , c.getZatStawka().replace(".",",")
+                    , c.getTypUmowy()
+                    , ((ListDataProvider<WorkStatisticDTO>)gridStat.getDataProvider()).getItems().stream()
+                            .filter( s -> s.getFrmName().equals(c.getFrmNazwa()))
+                            .filter( s -> s.getTypeOfAgreement().equals("Umowa o pracę"))
+                            .collect(Collectors.toList()).get(0).getWorkersSum().toString()
+                    , ((ListDataProvider<WorkStatisticDTO>)gridStat.getDataProvider()).getItems().stream()
+                            .filter( s -> s.getFrmName().equals(c.getFrmNazwa()))
+                            .filter( s -> s.getTypeOfAgreement().equals("Umowa zlecenie"))
+                            .collect(Collectors.toList()).get(0).getWorkersSum().toString()
+                            + "" );
+        });
 
 
 
@@ -170,21 +177,5 @@ public class WorkGovPlView extends VerticalLayout {
 
     }
 
-    private InputStream getInputStreamStatistic() {
-        StringWriter stringWriterStat = new StringWriter();
-        CSVWriter csvWriterStat = new CSVWriter(stringWriterStat);
-        csvWriterStat.setSeparatorChar(';');
-
-        csvWriterStat.writeNext("");
-        csvWriterStat.writeNext("Firma", "TypUmowy", "Ilość");
-        ((ListDataProvider<WorkStatisticDTO>)gridStat.getDataProvider()).getItems()
-                .forEach(s -> csvWriterStat.writeNext("" + s.getFrmName(), s.getTypeOfAgreement(), s.getWorkersSum() + ""));
-
-        try {
-            return IOUtils.toInputStream(stringWriterStat.toString(), "UTF-8");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 }
