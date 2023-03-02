@@ -98,6 +98,9 @@ public class WorkGovpl {
     @Column(name = "FRM_NAZWA")
     private String frmNazwa;
 
+    @Column(name = "TYP_UMOWY")
+    private String typUmowy;
+
     public WorkGovpl() {
     }
 
@@ -323,5 +326,13 @@ public class WorkGovpl {
 
     public void setFrmNazwa(String frmNazwa) {
         this.frmNazwa = frmNazwa;
+    }
+
+    public String getTypUmowy() {
+        return typUmowy;
+    }
+
+    public void setTypUmowy(String typUmowy) {
+        this.typUmowy = typUmowy;
     }
 }

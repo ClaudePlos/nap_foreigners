@@ -42,6 +42,8 @@ public class WorkGovPlView extends VerticalLayout {
 
 
     private Anchor a;
+
+    private Anchor aS;
     public WorkGovPlView(WorkGovplService workGovplService) {
         this.workGovplService = workGovplService;
 
@@ -88,6 +90,7 @@ public class WorkGovPlView extends VerticalLayout {
         grid.addColumn(WorkGovpl::getAdrNumerLokalu).setHeader("AdrNumerLokalu").setResizable(true);
         grid.addColumn(WorkGovpl::getEtat).setHeader("Etat").setResizable(true);
         grid.addColumn(WorkGovpl::getZatStawka).setHeader("ZatStawka").setResizable(true);
+        grid.addColumn(WorkGovpl::getTypUmowy).setHeader("TypUmowy").setResizable(true);
 
 
         gridStat.addColumn(WorkStatisticDTO::getFrmName).setHeader("Firma").setResizable(true);
@@ -112,6 +115,11 @@ public class WorkGovPlView extends VerticalLayout {
 
         List<WorkStatisticDTO> list = workGovplService.getListToStatistic();
         gridStat.setItems(list);
+
+        aS = new Anchor(new StreamResource("obcokrajowcy_stat.csv", this::getInputStreamStatistic), "Export Stat");
+        aS.getElement().setAttribute("download", true);
+
+        add(aS);
 
     }
 
@@ -145,15 +153,12 @@ public class WorkGovPlView extends VerticalLayout {
         StringWriter stringWriter = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(stringWriter);
         csvWriter.setSeparatorChar(';');
-        csvWriter.writeNext("Firma", "Numer", "Imie", "Imie2", "Nazwisko", "Plec", "DataUr", "Pesel", "Obywatelstwo", "Paszport", "DowodOsob", "DataPrzyj", "DataZmiany", "Stanowisko", "KodZawodu", "RodzajUmowy", "SkKod", "KodPocztowy", "Wojewodztwo", "Gmina", "Ulica", "Powiat", "Miejscowosc", "NumDomu", "NumLokalu", "Etat", "Stawka");
+        csvWriter.writeNext("Firma", "Numer", "Imie", "Imie2", "Nazwisko", "Plec", "DataUr", "Pesel", "Obywatelstwo", "Paszport", "DowodOsob", "DataPrzyj", "DataZmiany", "Stanowisko", "KodZawodu", "RodzajUmowy", "SkKod", "KodPocztowy", "Wojewodztwo", "Gmina", "Ulica", "Powiat", "Miejscowosc", "NumDomu", "NumLokalu", "Etat", "Stawka","TypUmowy");
         listToExcel.forEach(c -> csvWriter.writeNext("" + c.getFrmNazwa(), c.getPrcNumer().toString(), c.getPrcImie(), c.getPrcImie2() , c.getPrcNazwisko() , c.getPrcPlec(), dtDDMMYYYY.format(c.getPrcDataUr()) , c.getPrcPesel() , c.getPrcObywatelstwo() , c.getPrcPaszport()
                 ,  c.getPrcDowodOsob() , dtDDMMYYYY.format(c.getZatDataPrzyj()), dtDDMMYYYY.format(c.getZatDataZmiany()) , c.getStnNazwa() , c.getKodZawodu() , c.getRodzajUmowy() , c.getSkKod() , c.getAdrKodPocztowy()
-                , c.getWojewodztwo() , c.getAdrGmina() , c.getAdrUlica() , c.getAdrPowiat() , c.getAdrMiejscowosc() , c.getAdrNumberDomu() , c.getAdrNumerLokalu(), c.getEtat() , c.getZatStawka().replace(".",",") + "" ));
+                , c.getWojewodztwo() , c.getAdrGmina() , c.getAdrUlica() , c.getAdrPowiat() , c.getAdrMiejscowosc() , c.getAdrNumberDomu() , c.getAdrNumerLokalu(), c.getEtat() , c.getZatStawka().replace(".",","), c.getTypUmowy() + "" ));
 
-        csvWriter.writeNext("");
-        csvWriter.writeNext("Firma", "TypUmowy", "Ilość");
-        ((ListDataProvider<WorkStatisticDTO>)gridStat.getDataProvider()).getItems()
-                .forEach(s -> csvWriter.writeNext("" + s.getFrmName(), s.getTypeOfAgreement(), s.getWorkersSum() + ""));
+
 
 
 
@@ -163,6 +168,23 @@ public class WorkGovPlView extends VerticalLayout {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private InputStream getInputStreamStatistic() {
+        StringWriter stringWriterStat = new StringWriter();
+        CSVWriter csvWriterStat = new CSVWriter(stringWriterStat);
+        csvWriterStat.setSeparatorChar(';');
+
+        csvWriterStat.writeNext("");
+        csvWriterStat.writeNext("Firma", "TypUmowy", "Ilość");
+        ((ListDataProvider<WorkStatisticDTO>)gridStat.getDataProvider()).getItems()
+                .forEach(s -> csvWriterStat.writeNext("" + s.getFrmName(), s.getTypeOfAgreement(), s.getWorkersSum() + ""));
+
+        try {
+            return IOUtils.toInputStream(stringWriterStat.toString(), "UTF-8");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
