@@ -29,7 +29,7 @@ public class AboutView extends Div {
                 messagingException.printStackTrace();
             }
         });
-        add(butTest);
+        //add(butTest);
 
     }
 
