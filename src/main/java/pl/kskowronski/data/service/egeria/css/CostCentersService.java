@@ -36,6 +36,7 @@ public class CostCentersService {
             c.setSkDesc((String) row[2]);
             c.setCity((String) row[3]);
             c.setStreet((String) row[4]);
+            c.setBusinessType(businessGoal);
             costCenters.add(c);
         });
 

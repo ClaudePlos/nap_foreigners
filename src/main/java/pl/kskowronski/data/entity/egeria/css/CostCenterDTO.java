@@ -9,6 +9,7 @@ public class CostCenterDTO {
     private String SkDesc;
     private String city;
     private String street;
+    private String businessType;
 
     public BigDecimal getSkId() {
         return skId;
@@ -48,5 +49,13 @@ public class CostCenterDTO {
 
     public void setStreet(String street) {
         this.street = street;
+    }
+
+    public String getBusinessType() {
+        return businessType;
+    }
+
+    public void setBusinessType(String businessType) {
+        this.businessType = businessType;
     }
 }

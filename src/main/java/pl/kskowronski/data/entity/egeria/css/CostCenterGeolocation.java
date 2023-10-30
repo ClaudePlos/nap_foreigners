@@ -33,6 +33,9 @@ public class CostCenterGeolocation {
     @Column(name = "SK_DESC")
     private String costCenterDesc;
 
+    @Column(name = "BUSINESS_TYPE")
+    private String businessType;
+
     public CostCenterGeolocation() {
     }
 
@@ -90,5 +93,13 @@ public class CostCenterGeolocation {
 
     public void setCostCenterDesc(String costCenterDesc) {
         this.costCenterDesc = costCenterDesc;
+    }
+
+    public String getBusinessType() {
+        return businessType;
+    }
+
+    public void setBusinessType(String businessType) {
+        this.businessType = businessType;
     }
 }

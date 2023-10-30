@@ -2,16 +2,17 @@ package pl.kskowronski.views.cost_centers_map;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
@@ -54,6 +55,8 @@ public class CostCentersMapView extends VerticalLayout {
 
     private CostCenterGeolocationRepo costCenterGeolocationRepo;
 
+    private Select<String> selectBusinessType = new Select<>("Country");
+
     public CostCentersMapView(CostCentersService costCentersService, CostCenterGeolocationRepo costCenterGeolocationRepo) throws IOException {
         this.costCentersService = costCentersService;
         this.costCenterGeolocationRepo = costCenterGeolocationRepo;
@@ -65,7 +68,7 @@ public class CostCentersMapView extends VerticalLayout {
         final String email = "claude-plos@o2.pl";
         nominatimClient = new JsonNominatimClient(baseUrl, httpClient, email);
         this.initMapComponents();
-        this.addCostCenterForRekeep();
+        this.addCostCenterForRekeep("Z");
 
         HorizontalLayout h01 = new HorizontalLayout();
 
@@ -74,12 +77,16 @@ public class CostCentersMapView extends VerticalLayout {
         });
 
         Button refresh = new Button("Odśwież", e ->{
-            this.addCostCenterForRekeep();
+            this.addCostCenterForRekeep(selectBusinessType.getValue());
         });
         refresh.setWidth("100px");
 
-        Button buttGetData = new Button("Ładuj dane (Nie klikać!)", e ->{
-            this.generateDataLocation();
+        Button buttGetData = new Button("Przeładuj dane (uaktualnienie SK)", e ->{
+            costCenterGeolocationRepo.deleteAll();
+            this.generateDataLocation("Z");
+            this.generateDataLocation("C");
+            this.generateDataLocation("K");
+            this.generateDataLocation("T");
         });
         buttGetData.setWidth("250px");
 
@@ -100,10 +107,19 @@ public class CostCentersMapView extends VerticalLayout {
             }
         });
 
-        h01.add(delete, refresh, buttGetData, searchField);
+
+        selectBusinessType.setItems("FM", "Catering", "Transport", "Kuchnie");
+        selectBusinessType.setValue("FM");
+        selectBusinessType.addValueChangeListener( v -> {
+            this.addCostCenterForRekeep(selectBusinessType.getValue());
+        });
+
+        h01.add(buttGetData,delete, refresh, searchField, selectBusinessType);
         add(h01, this.map);
         this.setSizeFull();
     }
+
+
 
     private void initMapComponents() throws IOException {
 
@@ -161,25 +177,43 @@ public class CostCentersMapView extends VerticalLayout {
                 this.markerRathaus);
     }
 
-    private void addCostCenterForRekeep()  {
-        List<CostCenterGeolocation> costCentersGeo = costCenterGeolocationRepo.findAll();
+    private void addCostCenterForRekeep(String businessType)  {
+        clearTheMap();
+
+        if (businessType.equals("FM")) {
+            businessType = "Z";
+        } else if (businessType.equals("Catering")) {
+            businessType = "C";
+        } else if (businessType.equals("Transport")) {
+            businessType = "T";
+        } else if (businessType.equals("Kuchnie")) {
+            businessType = "K";
+        }
+
+        List<CostCenterGeolocation> costCentersGeo = costCenterGeolocationRepo.getAllForBusinessType(businessType);
 
         costCentersGeo.forEach( c -> {
             marker = new LMarker(c.getLatitude().doubleValue(), c.getLongitude().doubleValue(), c.getCostCenterCode());
             marker.setPopup("<p><center><b>" + c.getCostCenterCode() + "</b></center></p><p>" + c.getCostCenterDesc() + "</p>" + c.getDisplayName());
+//            LIcon icon = new LIcon();
+//            icon.setIconUrl("https://www.google.pl/search?sca_esv=577907868&sxsrf=AM9HkKncyQG4FXEC4qvNqPe9rJAUMq_l5Q:1698696773815&q=marker+png&tbm=isch&source=lnms&sa=X&ved=2ahUKEwie7KLOyp6CAxXHLRAIHYKGDfIQ0pQJegQIDRAB&biw=1920&bih=911#imgrc=Y8LUHPP8HPxZ3M");
+//            marker.setIcon(icon);
             this.map.addLComponents(marker);
         });
 
     }
 
-    public void generateDataLocation() {
+    public void generateDataLocation(String businessType) {
 
-        List<CostCenterDTO> costCenters = costCentersService.getAllCostCentersForRekeep("Z");
+        List<CostCenterDTO> costCenters = costCentersService.getAllCostCentersForRekeep(businessType);
 
         costCenters.forEach( c -> {
-            List<Address> addresses = null;
+            List<Address> addresses = new ArrayList<>();
             try {
-                addresses = nominatimClient.search(c.getCity() + ", Polska, " + c.getStreet() );
+                if (c.getCity() != null && c.getStreet() != null) {
+                    addresses = nominatimClient.search(c.getStreet() + ", " + c.getCity() );
+                    //addresses = nominatimClient.search(c.getCity() + ", Polska, " + c.getStreet() );
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -193,6 +227,7 @@ public class CostCentersMapView extends VerticalLayout {
                 gNew.setCity(c.getCity());
                 gNew.setStreet(c.getStreet());
                 gNew.setCostCenterDesc(c.getSkDesc());
+                gNew.setBusinessType(c.getBusinessType());
                 costCenterGeolocationRepo.save(gNew);
             }
         });
