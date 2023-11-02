@@ -82,7 +82,7 @@ public class CostCentersMapView extends VerticalLayout {
         refresh.setWidth("100px");
 
         Button buttGetData = new Button("Przeładuj dane (uaktualnienie SK)", e ->{
-            costCenterGeolocationRepo.deleteAll();
+            costCentersService.deleteItemsFromNApSkGeolocationForArchiveSk();
             this.generateDataLocation("Z");
             this.generateDataLocation("C");
             this.generateDataLocation("K");
@@ -108,7 +108,7 @@ public class CostCentersMapView extends VerticalLayout {
         });
 
 
-        selectBusinessType.setItems("FM", "Catering", "Transport", "Kuchnie");
+        selectBusinessType.setItems("FM", "FOOD", "Catering", "Transport", "Kuchnie");
         selectBusinessType.setValue("FM");
         selectBusinessType.addValueChangeListener( v -> {
             this.addCostCenterForRekeep(selectBusinessType.getValue());
@@ -182,6 +182,8 @@ public class CostCentersMapView extends VerticalLayout {
 
         if (businessType.equals("FM")) {
             businessType = "Z";
+        } else if (businessType.equals("FOOD")) {
+            businessType = "F";
         } else if (businessType.equals("Catering")) {
             businessType = "C";
         } else if (businessType.equals("Transport")) {
@@ -190,7 +192,17 @@ public class CostCentersMapView extends VerticalLayout {
             businessType = "K";
         }
 
-        List<CostCenterGeolocation> costCentersGeo = costCenterGeolocationRepo.getAllForBusinessType(businessType);
+        List<CostCenterGeolocation> costCentersGeo = new ArrayList<>();
+        if (businessType.equals("Z") || businessType.equals("F")) {
+            String contractType = "Publiczny";
+            if (businessType.equals("F")){
+                contractType = "Komercja";
+            }
+            costCentersGeo = costCenterGeolocationRepo.getAllForBusinessTypeWithContract("Z", contractType);
+        } else {
+            costCentersGeo = costCenterGeolocationRepo.getAllForBusinessType(businessType);
+        }
+
 
         costCentersGeo.forEach( c -> {
             marker = new LMarker(c.getLatitude().doubleValue(), c.getLongitude().doubleValue(), c.getCostCenterCode());
@@ -228,6 +240,8 @@ public class CostCentersMapView extends VerticalLayout {
                 gNew.setStreet(c.getStreet());
                 gNew.setCostCenterDesc(c.getSkDesc());
                 gNew.setBusinessType(c.getBusinessType());
+                gNew.setContractType(c.getContractType());
+                gNew.setSkId(c.getSkId());
                 costCenterGeolocationRepo.save(gNew);
             }
         });

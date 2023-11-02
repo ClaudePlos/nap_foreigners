@@ -10,6 +10,7 @@ public class CostCenterDTO {
     private String city;
     private String street;
     private String businessType;
+    private String contractType;
 
     public BigDecimal getSkId() {
         return skId;
@@ -57,5 +58,13 @@ public class CostCenterDTO {
 
     public void setBusinessType(String businessType) {
         this.businessType = businessType;
+    }
+
+    public String getContractType() {
+        return contractType;
+    }
+
+    public void setContractType(String contractType) {
+        this.contractType = contractType;
     }
 }

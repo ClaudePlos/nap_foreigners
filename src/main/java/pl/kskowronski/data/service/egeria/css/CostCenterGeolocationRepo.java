@@ -10,6 +10,9 @@ import java.util.Optional;
 
 public interface CostCenterGeolocationRepo extends JpaRepository<CostCenterGeolocation, String> {
 
+    @Query("select g from CostCenterGeolocation g where g.businessType = :businessType and g.contractType = :contractType")
+    List<CostCenterGeolocation> getAllForBusinessTypeWithContract(@Param("businessType") String businessType, @Param("contractType") String contractType);
+
     @Query("select g from CostCenterGeolocation g where g.businessType = :businessType")
     List<CostCenterGeolocation> getAllForBusinessType(@Param("businessType") String businessType);
 

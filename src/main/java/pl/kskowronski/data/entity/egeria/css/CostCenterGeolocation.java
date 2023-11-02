@@ -36,6 +36,12 @@ public class CostCenterGeolocation {
     @Column(name = "BUSINESS_TYPE")
     private String businessType;
 
+    @Column(name = "CONTRACT_TYPE")
+    private String contractType;
+
+    @Column(name = "SK_ID")
+    private BigDecimal skId;
+
     public CostCenterGeolocation() {
     }
 
@@ -101,5 +107,21 @@ public class CostCenterGeolocation {
 
     public void setBusinessType(String businessType) {
         this.businessType = businessType;
+    }
+
+    public String getContractType() {
+        return contractType;
+    }
+
+    public void setContractType(String contractType) {
+        this.contractType = contractType;
+    }
+
+    public BigDecimal getSkId() {
+        return skId;
+    }
+
+    public void setSkId(BigDecimal skId) {
+        this.skId = skId;
     }
 }
