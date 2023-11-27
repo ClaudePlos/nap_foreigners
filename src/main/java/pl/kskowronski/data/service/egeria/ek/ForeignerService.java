@@ -56,6 +56,7 @@ public class ForeignerService extends CrudService<Foreigner, BigDecimal> {
         worker.setRunDate(f.getRunDate());
         worker.setStatus(f.getStatus());
         worker.setTypeOfAgreement(f.getTypeOfAgreement());
+        worker.setPlatform(f.getPlatform());
         return worker;
     }
 

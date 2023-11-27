@@ -47,6 +47,9 @@ public class NapForeignerLog {
     @Column(name = "SK_FOR_APPLICATION")
     private String skForApplication;
 
+    @Column(name = "PLATFORM")
+    private String platform;
+
     public NapForeignerLog() {
     }
 
@@ -128,5 +131,13 @@ public class NapForeignerLog {
 
     public void setSkForApplication(String skForApplication) {
         this.skForApplication = skForApplication;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
     }
 }

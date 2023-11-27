@@ -45,6 +45,9 @@ public class Foreigner {
     @Column(name = "KOD_TYPU")
     private String typeOfAgreement;
 
+    @Column(name = "PLATFORM")
+    private String platform;
+
     public Foreigner() {
     }
 
@@ -134,5 +137,13 @@ public class Foreigner {
 
     public void setTypeOfAgreement(String typeOfAgreement) {
         this.typeOfAgreement = typeOfAgreement;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
     }
 }

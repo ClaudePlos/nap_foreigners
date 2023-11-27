@@ -103,10 +103,11 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         gridDocuments.setColumns("nazwa", "opis", "frmName");
 
         gridWorkersToAccept.addColumn(TemplateRenderer.<WorkerDTO> of(
-                "<div title='[[item.sk]] [[item.runProcess]] ProcId:[[item.processId]]'>[[item.sk]]<br><small>[[item.runProcess]]</small></div>")
+                "<div title='[[item.sk]] [[item.runProcess]] ProcId:[[item.processId]]'>[[item.sk]]<br><small>[[item.runProcess]]</small> [<small>[[item.platform]]</small>]</div>")
                 .withProperty("sk", WorkerDTO::getSk)
                 .withProperty("processId", WorkerDTO::getProcesId)
-                .withProperty("runProcess", WorkerDTO::getRunProcess))
+                .withProperty("runProcess", WorkerDTO::getRunProcess)
+                .withProperty("platform", WorkerDTO::getPlatform))
                 .setHeader("runProcess");
 
         gridWorkersToAccept.addColumn(new NativeButtonRenderer<WorkerDTO>("Umowa",

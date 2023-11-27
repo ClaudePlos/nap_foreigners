@@ -24,6 +24,8 @@ public class WorkerDTO {
 
     private String typeOfAgreement;
 
+    private String platform;
+
     public WorkerDTO() {
     }
 
@@ -153,5 +155,13 @@ public class WorkerDTO {
 
     public void setTypeOfAgreement(String typeOfAgreement) {
         this.typeOfAgreement = typeOfAgreement;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
     }
 }
