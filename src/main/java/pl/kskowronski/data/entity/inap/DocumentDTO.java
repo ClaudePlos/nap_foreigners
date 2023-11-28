@@ -10,6 +10,7 @@ public class DocumentDTO {
     private String opis;
     private BigDecimal frmId;
     private String frmName;
+    private String path;
 
     public DocumentDTO() {
     }
@@ -52,5 +53,13 @@ public class DocumentDTO {
 
     public void setFrmName(String frmName) {
         this.frmName = frmName;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

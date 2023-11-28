@@ -30,6 +30,7 @@ import pl.kskowronski.data.service.egeria.ek.ForeignerService;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
 import pl.kskowronski.data.service.inap.DocumentService;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
+import pl.kskowronski.data.service.suncode.SunDokService;
 import pl.kskowronski.views.components.ContractDialog;
 import pl.kskowronski.views.main.MainView;
 import com.vaadin.flow.router.RouteAlias;
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
 public class WorkersToAcceptationView extends HorizontalLayout {
 
     private transient ForeignerService foreignerService;
+    private SunDokService sunDokService;
     private transient MailService mailService;
 
     @Autowired
@@ -66,9 +68,11 @@ public class WorkersToAcceptationView extends HorizontalLayout {
             , @Autowired MailService mailService
             , @Autowired ForeignerService foreignerService
             , @Autowired DocumentService documentService
-            , @Autowired NapForeignerLogService napForeignerLogService) {
+            , @Autowired NapForeignerLogService napForeignerLogService
+            , SunDokService sunDokService) {
         this.foreignerService = foreignerService;
         this.mailService = mailService;
+        this.sunDokService = sunDokService;
         setId("workers-to-acceptation-view");
         setHeight("95%");
 
@@ -248,7 +252,16 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         gridWorkersToAccept.setItemDetailsRenderer(new ComponentRenderer<>(worker -> {
             VerticalLayout layout = new VerticalLayout();
             Optional<List<DocumentDTO>> documents = documentService.getDocumentForPrc(worker.getPrcId());
+            Optional<List<DocumentDTO>> documentsSun = sunDokService.getDocumentForPrc(worker.getPrcId());
+
+            if (documentsSun.isPresent()) {
+                documentsSun.get().forEach( doc -> {
+                    documents.get().add(doc);
+                });
+            }
+
             gridDocuments.setItems(documents.get());
+
             layout.add(gridDocuments);
             return layout;
         }));
