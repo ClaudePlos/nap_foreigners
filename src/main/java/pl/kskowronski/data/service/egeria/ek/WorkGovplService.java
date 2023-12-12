@@ -84,7 +84,7 @@ public class WorkGovplService {
                         "         AND zat_typ_umowy in (0,7) \n" +
                         "         AND sysdate between zat_data_zmiany and NVL(zat_data_do, sysdate))\n" +
                         ")\n" +
-                        "where frm_id in (300319,300000,300203,300305,300313,300201)\n" +
+                        "where frm_id in (300319,300000,300203,300305,300313,300201,300322)\n" +
                         "group by frm_nazwa, typ_umowy, zat_typ_umowy, frm_id\n" +
                         "order by frm_nazwa, typ_umowy";
         List<Object[]> result =  em.createNativeQuery(sql).getResultList();
