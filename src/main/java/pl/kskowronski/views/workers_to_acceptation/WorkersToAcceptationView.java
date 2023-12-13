@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Route(value = "to_acceptation", layout = MainView.class)
+@Route(value = "to_acceptation", layout = MainView.class) //
 @PageTitle("workers to acceptation")
 @CssImport("./styles/views/workers_to_acceptation/workers-to-acceptation-view.css")
 @RouteAlias(value = "", layout = MainView.class)
