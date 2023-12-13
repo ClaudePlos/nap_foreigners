@@ -155,7 +155,12 @@ public class ContractDialog extends Dialog {
             add( "Typ stawki: " +  f.getZatTYpeOfRate());add(new Html("<div><br></div>"));
             add( "Stawka: " +  f.getZatStawka());add(new Html("<div><br></div>"));
             add( "DATA_OD: " +  f.getZatDataOd().toString().substring(0,10));add(new Html("<div><br></div>"));
-            add( "DATA_DO: " +  f.getZatDataDo().toString().substring(0,10));add(new Html("<div><br></div>"));
+            if (f.getZatDataDo() != null) {
+                add( "DATA_DO: " +  f.getZatDataDo().toString().substring(0,10));add(new Html("<div><br></div>"));
+            } else {
+                add( "DATA_DO: ");
+            }
+
 
         }
 
