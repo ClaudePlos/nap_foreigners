@@ -19,3 +19,4 @@ error-screenshots/
 webpack.generated.js
 /src/main/resources/keystore.jks
 /src/main/resources/application.properties
+keystore.jks

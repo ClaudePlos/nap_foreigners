@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Route(value = "to_acceptation", layout = MainView.class) //
+@Route(value = "to_acceptation", layout = MainView.class)
 @PageTitle("workers to acceptation")
 @CssImport("./styles/views/workers_to_acceptation/workers-to-acceptation-view.css")
 @RouteAlias(value = "", layout = MainView.class)
@@ -145,6 +145,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         napForeignerLog.setProcessId(item.getProcesId());
                         napForeignerLog.setWhoRunInInap(item.getRunProcess());
                         napForeignerLog.setSkForApplication(item.getSk());
+                        napForeignerLog.setPlatform(item.getPlatform());
                         napForeignerLogService.save(napForeignerLog);
                         Notification.show("Zaakceptowano process: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
                         this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
@@ -187,6 +188,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         napForeignerLog.setWhoRunInInap(item.getRunProcess());
                         napForeignerLog.setSkForApplication(item.getSk());
                         napForeignerLogService.save(napForeignerLog);
+                        napForeignerLog.setPlatform(item.getPlatform());
                         Notification.show("Wniosek zawiszony procId: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
                         this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
                         this.gridWorkersToAccept.getDataProvider().refreshAll();
@@ -222,6 +224,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         napForeignerLog.setProcessId(item.getProcesId());
                         napForeignerLog.setWhoRunInInap(item.getRunProcess());
                         napForeignerLog.setSkForApplication(item.getSk());
+                        napForeignerLog.setPlatform(item.getPlatform());
                         napForeignerLogService.save(napForeignerLog);
                         Notification.show("Odrzucone process: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
                         this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
@@ -298,6 +301,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         || item.getRunProcess().toUpperCase().contains(filterText.getValue().toUpperCase())
                         || item.getProcesId().toString().contains(filterText.getValue().toUpperCase())
                         || item.getSk().contains(filterText.getValue().toUpperCase())
+                        || item.getPlatform().toUpperCase().contains(filterText.getValue().toUpperCase())
                         || item.getTypeOfAgreement().contains(filterText.getValue().toUpperCase())
                 )
                 .collect(Collectors.toList());
