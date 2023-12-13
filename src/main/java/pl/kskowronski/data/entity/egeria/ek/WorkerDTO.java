@@ -164,4 +164,5 @@ public class WorkerDTO {
     public void setPlatform(String platform) {
         this.platform = platform;
     }
+
 }
