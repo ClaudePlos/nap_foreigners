@@ -11,6 +11,7 @@ public class DocumentDTO {
     private BigDecimal frmId;
     private String frmName;
     private String path;
+    private String platform;
 
     public DocumentDTO() {
     }
@@ -61,5 +62,13 @@ public class DocumentDTO {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
     }
 }

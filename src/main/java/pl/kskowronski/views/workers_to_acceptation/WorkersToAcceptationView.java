@@ -104,7 +104,8 @@ public class WorkersToAcceptationView extends HorizontalLayout {
 
         gridWorkersToAccept.addColumn("runDate").setWidth("120px");
 
-        gridDocuments.setColumns("nazwa", "opis", "frmName");
+        gridDocuments.setColumns("nazwa");
+        gridDocuments.addColumn("opis").setResizable(true);
 
         gridWorkersToAccept.addColumn(TemplateRenderer.<WorkerDTO> of(
                 "<div title='[[item.sk]] [[item.runProcess]] ProcId:[[item.processId]]'>[[item.sk]]<br><small>[[item.runProcess]]</small> [<small>[[item.platform]]</small>]</div>")
@@ -112,7 +113,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                 .withProperty("processId", WorkerDTO::getProcesId)
                 .withProperty("runProcess", WorkerDTO::getRunProcess)
                 .withProperty("platform", WorkerDTO::getPlatform))
-                .setHeader("runProcess");
+                .setHeader("runProcess").setResizable(true);
 
         gridWorkersToAccept.addColumn(new NativeButtonRenderer<WorkerDTO>("Umowa",
                 item -> {
@@ -244,7 +245,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
 
         gridDocuments.addColumn(new NativeButtonRenderer<DocumentDTO>("PDF",
                 item -> {
-                    String pdfUrl = documentService.generateUrlForPDF(item.getId());
+                    String pdfUrl = documentService.generateUrlForPDF(item.getId(), item.getPlatform(), item.getPath());
                     UI.getCurrent().getPage().executeJavaScript("window.open('" + pdfUrl + "','_blank')");
                 }
         ));

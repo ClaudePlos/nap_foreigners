@@ -259,7 +259,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
 
         gridDocuments.addColumn(new NativeButtonRenderer<DocumentDTO>("PDF",
                 item -> {
-                    String pdfUrl = documentService.generateUrlForPDF(item.getId());
+                    String pdfUrl = documentService.generateUrlForPDF(item.getId(), item.getPlatform(), item.getPath());
                     UI.getCurrent().getPage().executeJavaScript("window.open('" + pdfUrl + "','_blank')");
                 }
         ));

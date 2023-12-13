@@ -46,6 +46,7 @@ public class DocumentService extends CrudService<Document, BigDecimal> {
         docDTO.setFrmId(doc.getFrmId());
         docDTO.setNazwa(doc.getNazwa());
         docDTO.setOpis(doc.getOpis());
+        docDTO.setPlatform("i.nap");
         if (doc.getFrmId() != null ){
             docDTO.setFrmName( eatFirmaRepo.findById(doc.getFrmId()).get().getFrmNazwa() );
         }
@@ -53,7 +54,11 @@ public class DocumentService extends CrudService<Document, BigDecimal> {
         return docDTO;
     }
 
-    public String generateUrlForPDF(BigDecimal dokId){
-       return "https://i.naprzod.pl/i/dok?action=getpdf&dokId=" + dokId;
+    public String generateUrlForPDF(BigDecimal dokId, String platform, String path){
+        if (platform.equals("i.nap") || platform == null) {
+            return "https://i.naprzod.pl/i/dok?action=getpdf&dokId=" + dokId;
+        } else {
+            return "file://fs1/ftp/" + path.replace("/home/plusworkflow/Dokumenty","");
+        }
     }
 }
