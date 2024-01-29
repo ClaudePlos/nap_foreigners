@@ -8,6 +8,7 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.IFrame;
 import com.vaadin.flow.component.html.Input;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
@@ -249,6 +250,17 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         gridDocuments.addColumn(new NativeButtonRenderer<DocumentDTO>("PDF",
                 item -> {
                     String pdfUrl = documentService.generateUrlForPDF(item.getId(), item.getPlatform(), item.getPath());
+
+//                    Dialog dialog = new Dialog();
+//                    dialog.setWidth("800px");
+//                    dialog.setHeight("600px");
+//
+//                    IFrame pdfViewer = new IFrame(pdfUrl);
+//                    pdfViewer.setSizeFull();
+//
+//                    dialog.add(pdfViewer);
+//                    dialog.open();
+
                     UI.getCurrent().getPage().executeJavaScript("window.open('" + pdfUrl + "','_blank')");
                 }
         ));

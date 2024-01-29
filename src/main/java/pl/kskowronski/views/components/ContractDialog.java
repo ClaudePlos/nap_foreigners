@@ -141,14 +141,22 @@ public class ContractDialog extends Dialog {
             }
             add(vertical);
 
-            final Button close = new Button("Zamknij", e2 -> {
-                close();
-            });
-            add(close);
         } else {
             // suncode
             SunEgZatForeigner f = sunEgZatForeignerService.findBySunZatId(item.getProcesId()); //in process id is also zatSunId from view
             add( " " +  eatFirmaService.findById(f.getZatFrmId()).get().getFrmNazwa());
+            add(new Html("<div><br></div>"));
+            if (f.getZatAneks() != null && f.getZatAneks().equals("T")) {
+                add(new Html("<div>Wniosek o przedłużenie umowy " + item.getTypeOfAgreement() + ": "
+                        + item.getPrcNazwisko() + " "
+                        + item.getPrcImie() + " na obiekcie " + item.getSk()
+                        + "</div>"));
+            } else {
+                add(new Html("<div>Wniosek o zawarcie nowej umowy: " + item.getTypeOfAgreement() + ": "
+                        + item.getPrcNazwisko() + " "
+                        + item.getPrcImie() + " na obiekcie " + item.getSk()
+                        + "</div>"));
+            }
             add(new Html("<div><br></div>"));
             add( " " +  f.getZatTopic());
             add(new Html("<div><br></div>"));
@@ -163,6 +171,11 @@ public class ContractDialog extends Dialog {
 
 
         }
+
+        final Button close = new Button("Zamknij", e2 -> {
+            close();
+        });
+        add(close);
 
 
     }

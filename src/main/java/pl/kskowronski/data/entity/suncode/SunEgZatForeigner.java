@@ -38,6 +38,9 @@ public class SunEgZatForeigner {
     @Column(name = "ZAT_OKRES_DO")
     private Date zatDataDo;
 
+    @Column(name = "ZAT_ANEKS")
+    private String zatAneks;
+
     public SunEgZatForeigner() {
     }
 
@@ -103,5 +106,13 @@ public class SunEgZatForeigner {
 
     public void setZatDataDo(Date zatDataDo) {
         this.zatDataDo = zatDataDo;
+    }
+
+    public String getZatAneks() {
+        return zatAneks;
+    }
+
+    public void setZatAneks(String zatAneks) {
+        this.zatAneks = zatAneks;
     }
 }
