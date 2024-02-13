@@ -58,7 +58,7 @@ public class DocumentService extends CrudService<Document, BigDecimal> {
         if (platform.equals("i.nap") || platform == null) {
             return "https://i.naprzod.pl/i/dok?action=getpdf&dokId=" + dokId;
         } else {
-            return "file://fs1/ftp/dev/" + path.replace("/home/plusworkflow/Dokumenty","");
+            return "http://fs1/ftp/DEV/" + path.replace("/home/plusworkflow/Dokumenty","");
         }
     }
 }
