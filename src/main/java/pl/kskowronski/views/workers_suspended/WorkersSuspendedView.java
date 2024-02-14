@@ -195,9 +195,23 @@ public class WorkersSuspendedView extends HorizontalLayout {
                     Dialog dialog = new Dialog();
                     String topic = "Obcokrajowcy. Wniosek do poprawy "+ item.getPrcSurname()+ " " + item.getPrcName() + " ProcId: " + item.getProcessId();
 
-                    String runProcess = processInstanceService.getProcessInstance(item.getProcessId()).get().getRunProcess();
+                    String runProcess = "";
+                    if (item.getPlatform().equals("suncode")) {
+                        runProcess = item.getWhoRunInInap();
+                    } else {
+                        runProcess = processInstanceService.getProcessInstance(item.getProcessId()).get().getRunProcess();
+                    }
 
-                    String content = "<div><b>Wiadomość do: </b>" + runProcess + "@rekeep.pl od " + userLogged.getUsername() + "@rekeep.pl"
+
+                    String to = "";
+                    if (item.getPlatform().equals("suncode")) {
+                        to = runProcess;
+                    } else {
+                        to = runProcess + "@rekeep.pl";
+                    }
+
+
+                    String content = "<div><b>Wiadomość do: </b>" + to + " od " + userLogged.getUsername() + "@rekeep.pl"
                             + "  <br><b>Temat:</b> " + topic +  "<br><b>Tekst:</b></div>";
                     Html html = new Html(content);
                     dialog.add(html);
@@ -206,6 +220,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
                     TextArea inputReject = new TextArea();
                     inputReject.setHeight("200px");
                     inputReject.setWidth("480px");
+                    String finalTo = to;
                     Button confirmButton = new Button("Zawieszam i wysyłam mail", event -> {
                         workerService.acceptForeignerApplication("Zawieszone przez HR (" + userLogged.getUsername()  +") Powód: " + inputReject.getValue()
                                 , item.getProcessId());
@@ -220,11 +235,15 @@ public class WorkersSuspendedView extends HorizontalLayout {
                         napForeignerLog.setRefresh("N");
                         napForeignerLog.setWhoRunInInap(item.getWhoRunInInap());
                         napForeignerLog.setSkForApplication(item.getSkForApplication());
+                        napForeignerLog.setPlatform(item.getPlatform());
                         napForeignerLogService.save(napForeignerLog);
                         Notification.show("Wniosek zawiszony procId: " + item.getProcessId() + " dla " + item.getPrcSurname(), 3000, Notification.Position.MIDDLE);
                         item.setRefresh("N");
                         this.gridWorkersSuspended.getDataProvider().refreshAll();
-                        sendMailTo(runProcess + "@rekeep.pl"
+
+
+
+                        sendMailTo(finalTo
                                 ,userLogged.getUsername() + "@rekeep.pl"
                                 , inputReject.getValue()
                                 , topic );

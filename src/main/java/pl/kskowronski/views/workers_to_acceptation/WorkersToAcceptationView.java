@@ -164,9 +164,17 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         gridWorkersToAccept.addColumn(new NativeButtonRenderer<WorkerDTO>("Zawieszam",
                 item -> {
                     Dialog dialog = new Dialog();
+
+                    String to = "";
+                    if (item.getPlatform().equals("suncode")) {
+                        to = item.getRunProcess();
+                    } else {
+                        to = item.getRunProcess() + "@rekeep.pl";
+                    }
+
                     String topic = "Obcokrajowcy. Wniosek do poprawy "+ item.getPrcNazwisko() + " " + item.getPrcImie() + " ProcId: " + item.getProcesId();
 
-                    String content = "<div><b>Wiadomość do: </b>" + item.getRunProcess() + "@rekeep.pl od " + userLogged.getUsername() + "@rekeep.pl"
+                    String content = "<div><b>Wiadomość do: </b>" + to +  " od " + userLogged.getUsername() + "@rekeep.pl"
                             + "  <br><b>Temat:</b> " + topic +  "<br><b>Tekst:</b></div>";
                     Html html = new Html(content);
                     dialog.add(html);
@@ -175,6 +183,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                     TextArea inputReject = new TextArea();
                     inputReject.setHeight("200px");
                     inputReject.setWidth("480px");
+                    String finalTo = to;
                     Button confirmButton = new Button("Zawieszam i wysyłam mail", event -> {
                         workerService.acceptForeignerApplication("Zawieszone przez HR (" + userLogged.getUsername()  +") Powód: " + inputReject.getValue()
                                 , item.getProcesId());
@@ -193,7 +202,10 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         Notification.show("Wniosek zawiszony procId: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
                         this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
                         this.gridWorkersToAccept.getDataProvider().refreshAll();
-                        sendMailTo(item.getRunProcess() + "@rekeep.pl"
+
+
+
+                        sendMailTo(finalTo
                                 ,userLogged.getUsername() + "@rekeep.pl"
                                 , inputReject.getValue()
                                 , topic );
@@ -211,6 +223,7 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         gridWorkersToAccept.addColumn(new NativeButtonRenderer<WorkerDTO>("Odrzucam",
                 item -> {
                     Dialog dialog = new Dialog();
+
                     dialog.add(new Text("Podaj powód: "));
                     Input inputReject = new Input();
                     Button confirmButton = new Button("Odrzucam", event -> {
@@ -232,7 +245,16 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         this.gridWorkersToAccept.getDataProvider().refreshAll();
 
                         String topic = "Obcokrajowcy. Wniosek dla "+ item.getPrcNazwisko() + " " + item.getPrcImie() + " odrzucony. ProcId: " + item.getProcesId();
-                        sendMailTo(item.getRunProcess() + "@rekeep.pl"
+
+                        String to = "";
+                        if (item.getPlatform().equals("suncode")) {
+                            to = item.getRunProcess();
+                        } else {
+                            to = item.getRunProcess() + "@rekeep.pl";
+                        }
+
+
+                        sendMailTo( to
                                 ,userLogged.getUsername() + "@rekeep.pl"
                                 , inputReject.getValue()
                                 , topic );

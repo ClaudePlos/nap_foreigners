@@ -101,12 +101,12 @@ public class ContractDialog extends Dialog {
             add( " " +  eatFirmaService.findById(f.getZatFrmId()).get().getFrmNazwa());
             add(new Html("<div><br></div>"));
             if (f.getZatAneks() != null && f.getZatAneks().equals("T")) {
-                add(new Html("<div>Wniosek o przedłużenie umowy " + f.getZatTypUmowy() + ": "
+                add(new Html("<div>Wniosek o przedłużenie umowy " + f.getZatTypUmowy().replace("0","UP").replace("2","UZ") + ": "
                         + item.getPrcSurname() + " "
                         + item.getPrcName() + " na obiekcie " + item.getSkForApplication()
                         + "</div>"));
             } else {
-                add(new Html("<div>Wniosek o zawarcie nowej umowy: " + f.getZatTypUmowy()  + ": "
+                add(new Html("<div>Wniosek o zawarcie nowej umowy: " + f.getZatTypUmowy().replace("0","UP").replace("2","UZ")   + ": "
                         + item.getPrcSurname() + " "
                         + item.getPrcName() + " na obiekcie " + item.getSkForApplication()
                         + "</div>"));
