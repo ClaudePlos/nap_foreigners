@@ -25,5 +25,8 @@ public class DictionaryService extends CrudService<Dictionary, String> {
         return repo.getSubjectOfTheContract(value);
     }
 
+    public Optional<String> getTypeOfContract(String value ){
+        return repo.getTypeOfContract(value);
+    }
 
 }
