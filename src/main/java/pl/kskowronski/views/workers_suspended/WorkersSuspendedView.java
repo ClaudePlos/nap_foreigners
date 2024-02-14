@@ -30,6 +30,7 @@ import pl.kskowronski.data.service.MapperDate;
 import pl.kskowronski.data.service.MyIcons;
 import pl.kskowronski.data.service.egeria.ek.WorkerService;
 import pl.kskowronski.data.service.inap.*;
+import pl.kskowronski.data.service.suncode.SunDokService;
 import pl.kskowronski.views.components.ContractDialog;
 import pl.kskowronski.views.main.MainView;
 
@@ -74,7 +75,8 @@ public class WorkersSuspendedView extends HorizontalLayout {
                                 , @Autowired WorkerService workerService
                                 , @Autowired DocumentService documentService
                                 , @Autowired ProcessInstanceService processInstanceService
-                                , @Autowired MailService mailService) throws Exception {
+                                , @Autowired MailService mailService
+                                , SunDokService sunDokService) throws Exception {
         this.napForeignerLogService = napForeignerLogService;
         this.workerService = workerService;
         this.mailService = mailService;
@@ -267,6 +269,14 @@ public class WorkersSuspendedView extends HorizontalLayout {
         gridWorkersSuspended.setItemDetailsRenderer(new ComponentRenderer<>(worker -> {
             VerticalLayout layout = new VerticalLayout();
             Optional<List<DocumentDTO>> documents = documentService.getDocumentForPrc(worker.getPrcId());
+            Optional<List<DocumentDTO>> documentsSun = sunDokService.getDocumentForPrc(worker.getPrcId());
+
+            if (documentsSun.isPresent()) {
+                documentsSun.get().forEach( doc -> {
+                    documents.get().add(doc);
+                });
+            }
+
             gridDocuments.setItems(documents.get());
             layout.add(gridDocuments);
             return layout;

@@ -31,6 +31,7 @@ import pl.kskowronski.data.service.inap.DocumentService;
 import pl.kskowronski.data.service.inap.NapForeignerLogService;
 import pl.kskowronski.data.service.inap.RequirementKeyService;
 import pl.kskowronski.data.service.inap.RequirementService;
+import pl.kskowronski.data.service.suncode.SunDokService;
 import pl.kskowronski.views.components.ContractDialog;
 import pl.kskowronski.views.main.MainView;
 
@@ -80,7 +81,8 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
             , @Autowired WorkerService workerService
             , @Autowired RequirementService requirementService
             , @Autowired RequirementKeyService requirementKeyService
-            , @Autowired EatFirmaService eatFirmaService) throws Exception {
+            , @Autowired EatFirmaService eatFirmaService
+            , SunDokService sunDokService) throws Exception {
         this.napForeignerLogService = napForeignerLogService;
         this.eatFirmaService = eatFirmaService;
         this.addressService = addressService;
@@ -185,6 +187,13 @@ public class WorkersAfterDecisionView extends HorizontalLayout {
         gridWorkersAfterDecision.setItemDetailsRenderer(new ComponentRenderer<>(worker -> {
             VerticalLayout layout = new VerticalLayout();
             Optional<List<DocumentDTO>> documents = documentService.getDocumentForPrc(worker.getPrcId());
+            Optional<List<DocumentDTO>> documentsSun = sunDokService.getDocumentForPrc(worker.getPrcId());
+
+            if (documentsSun.isPresent()) {
+                documentsSun.get().forEach( doc -> {
+                    documents.get().add(doc);
+                });
+            }
             gridDocuments.setItems(documents.get());
             layout.add(gridDocuments);
             return layout;
