@@ -58,40 +58,78 @@ public class ContractDialog extends Dialog {
         setWidth("400px");
         setHeight("400px");
         add(new Html("<b>Szczegóły wniosku:</b>"));
-        VerticalLayout vertical = new VerticalLayout ();
-        Optional<Requirement> requirement = requirementService.getRequirementForProcess(item.getProcessId());
-        add( " " +  eatFirmaService.findById(requirement.get().getFrmId()).get().getFrmNazwa());
-        add(new Html("<div><br>" + requirement.get().getTitle()  + "</div>"));
-        Optional<List<RequirementKey>> requirements = requirementKeyService.getRequirementForProcess(item.getProcessId());
-        if (requirements.get().size() > 0){
-            requirements.get().stream().forEach( e -> {
-                        String num = e.getLiczba() == BigDecimal.ZERO ? "" : e.getLiczba().toString();
-                        String text = e.getTekst() == null ? "" : e.getTekst();
-                        String date = mapperDate.dtYYYYMMDD.format(e.getDate()).equals("1970-01-01") ? "" : mapperDate.dtYYYYMMDD.format(e.getDate());
 
-                        if (e.getType().equals("STN_PRACY")){
-                            Optional<Occupation> occupation = occupationRepo.findById(e.getLiczba());
-                            if (occupation.isPresent()){
-                                text = occupation.get().getStnNazwa();
+        if (item.getPlatform().equals("i.nap")) {
+            VerticalLayout vertical = new VerticalLayout ();
+            Optional<Requirement> requirement = requirementService.getRequirementForProcess(item.getProcessId());
+            add( " " +  eatFirmaService.findById(requirement.get().getFrmId()).get().getFrmNazwa());
+            add(new Html("<div><br>" + requirement.get().getTitle()  + "</div>"));
+            Optional<List<RequirementKey>> requirements = requirementKeyService.getRequirementForProcess(item.getProcessId());
+            if (requirements.get().size() > 0){
+                requirements.get().stream().forEach( e -> {
+                            String num = e.getLiczba() == BigDecimal.ZERO ? "" : e.getLiczba().toString();
+                            String text = e.getTekst() == null ? "" : e.getTekst();
+                            String date = mapperDate.dtYYYYMMDD.format(e.getDate()).equals("1970-01-01") ? "" : mapperDate.dtYYYYMMDD.format(e.getDate());
+
+                            if (e.getType().equals("STN_PRACY")){
+                                Optional<Occupation> occupation = occupationRepo.findById(e.getLiczba());
+                                if (occupation.isPresent()){
+                                    text = occupation.get().getStnNazwa();
+                                }
                             }
-                        }
 
-                        if (e.getType().equals("PRZEDMIOT_UMOWY")){
-                            Optional<String> subjectOfTheContract = dictionaryService.getSubjectOfTheContract(text);
-                            if (subjectOfTheContract.isPresent()){
-                                text = subjectOfTheContract.get();
+                            if (e.getType().equals("PRZEDMIOT_UMOWY")){
+                                Optional<String> subjectOfTheContract = dictionaryService.getSubjectOfTheContract(text);
+                                if (subjectOfTheContract.isPresent()){
+                                    text = subjectOfTheContract.get();
+                                }
                             }
-                        }
 
-                        Label lab = new Label(e.getType() + ": "+ num + date + text);
-                        vertical.add(lab);
-                    }
-            );
+                            Label lab = new Label(e.getType() + ": "+ num + date + text);
+                            vertical.add(lab);
+                        }
+                );
+
+            } else {
+                Notification.show("Brak informacji odnośnie umowy", 3000, Notification.Position.MIDDLE);
+            }
+            add(vertical);
 
         } else {
-            Notification.show("Brak informacji odnośnie umowy", 3000, Notification.Position.MIDDLE);
+            // suncode
+            SunEgZatForeigner f = sunEgZatForeignerService.findBySunZatId(item.getProcessId()); //in process id is also zatSunId from view
+            add( " " +  eatFirmaService.findById(f.getZatFrmId()).get().getFrmNazwa());
+            add(new Html("<div><br></div>"));
+            if (f.getZatAneks() != null && f.getZatAneks().equals("T")) {
+                add(new Html("<div>Wniosek o przedłużenie umowy " + f.getZatTypUmowy() + ": "
+                        + item.getPrcSurname() + " "
+                        + item.getPrcName() + " na obiekcie " + item.getSkForApplication()
+                        + "</div>"));
+            } else {
+                add(new Html("<div>Wniosek o zawarcie nowej umowy: " + f.getZatTypUmowy()  + ": "
+                        + item.getPrcSurname() + " "
+                        + item.getPrcName() + " na obiekcie " + item.getSkForApplication()
+                        + "</div>"));
+            }
+            add(new Html("<div><br></div>"));
+            add( " " +  f.getZatTopic());
+            add(new Html("<div><br></div>"));
+            add( "Rodzaj umowy: " +  dictionaryService.getTypeOfContract(f.getZatFRodzaj()).get());add(new Html("<div></div>"));
+            add( "Typ stawki: " +  f.getZatTYpeOfRate());add(new Html("<div></div>"));
+            add( "Stawka: " +  f.getZatStawka());add(new Html("<div><br></div>"));
+            add( "DATA_OD: " +  f.getZatDataOd().toString().substring(0,10));add(new Html("<div><br></div>"));
+            if (f.getZatDataDo() != null) {
+                add( "DATA_DO: " +  f.getZatDataDo().toString().substring(0,10));add(new Html("<div><br></div>"));
+            } else {
+                add( "DATA_DO: ");
+            }
+
+
         }
-        add(vertical);
+
+
+
+
 
         final Button close = new Button("Zamknij", e -> {
             close();

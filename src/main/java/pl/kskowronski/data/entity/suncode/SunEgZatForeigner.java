@@ -44,6 +44,9 @@ public class SunEgZatForeigner {
     @Column(name = "ZAT_F_RODZAJ")
     private String zatFRodzaj;
 
+    @Column(name = "ZAT_TYP_UMOWY")
+    private String zatTypUmowy;
+
     public SunEgZatForeigner() {
     }
 
@@ -125,5 +128,13 @@ public class SunEgZatForeigner {
 
     public void setZatFRodzaj(String zatFRodzaj) {
         this.zatFRodzaj = zatFRodzaj;
+    }
+
+    public String getZatTypUmowy() {
+        return zatTypUmowy;
+    }
+
+    public void setZatTypUmowy(String zatTypUmowy) {
+        this.zatTypUmowy = zatTypUmowy;
     }
 }

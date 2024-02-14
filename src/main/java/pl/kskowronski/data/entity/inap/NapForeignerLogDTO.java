@@ -18,6 +18,7 @@ public class NapForeignerLogDTO  {
     private String refresh;
     private String skForApplication;
     private String whoRunInInap;
+    private String platform;
 
 
     public NapForeignerLogDTO() {
@@ -126,5 +127,13 @@ public class NapForeignerLogDTO  {
 
     public void setWhoRunInInap(String whoRunInInap) {
         this.whoRunInInap = whoRunInInap;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
     }
 }

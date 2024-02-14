@@ -103,6 +103,7 @@ public class NapForeignerLogService extends CrudService<NapForeignerLog, BigDeci
             foreigner.setPrcName("-");
             foreigner.setPrcSurname("-");
         }
+        foreigner.setPlatform(f.getPlatform());
         return foreigner;
     }
 

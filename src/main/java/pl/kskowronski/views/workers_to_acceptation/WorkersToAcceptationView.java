@@ -188,8 +188,8 @@ public class WorkersToAcceptationView extends HorizontalLayout {
                         napForeignerLog.setRefresh("N");
                         napForeignerLog.setWhoRunInInap(item.getRunProcess());
                         napForeignerLog.setSkForApplication(item.getSk());
-                        napForeignerLogService.save(napForeignerLog);
                         napForeignerLog.setPlatform(item.getPlatform());
+                        napForeignerLogService.save(napForeignerLog);
                         Notification.show("Wniosek zawiszony procId: " + item.getProcesId() + " dla " + item.getPrcNazwisko(), 3000, Notification.Position.MIDDLE);
                         this.workers.get().remove(item); // NEVER instantiate your service or dao yourself, instead inject it into the view
                         this.gridWorkersToAccept.getDataProvider().refreshAll();
