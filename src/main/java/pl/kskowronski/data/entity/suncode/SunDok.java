@@ -29,6 +29,9 @@ public class SunDok {
     @Column(name = "RODZAJ_DOK")
     private String rodzajDok;
 
+    @Column(name = "AUDYT_DU")
+    private String audytDU;
+
     public SunDok() {
     }
 
@@ -78,5 +81,13 @@ public class SunDok {
 
     public void setRodzajDok(String rodzajDok) {
         this.rodzajDok = rodzajDok;
+    }
+
+    public String getAudytDU() {
+        return audytDU;
+    }
+
+    public void setAudytDU(String audytDU) {
+        this.audytDU = audytDU;
     }
 }

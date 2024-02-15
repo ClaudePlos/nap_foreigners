@@ -2,6 +2,7 @@ package pl.kskowronski.data.entity.inap;
 
 import javax.persistence.Column;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class DocumentDTO {
 
@@ -12,6 +13,7 @@ public class DocumentDTO {
     private String frmName;
     private String path;
     private String platform;
+    private LocalDate audytDU;
 
     public DocumentDTO() {
     }
@@ -70,5 +72,13 @@ public class DocumentDTO {
 
     public void setPlatform(String platform) {
         this.platform = platform;
+    }
+
+    public LocalDate getAudytDU() {
+        return audytDU;
+    }
+
+    public void setAudytDU(LocalDate audytDU) {
+        this.audytDU = audytDU;
     }
 }

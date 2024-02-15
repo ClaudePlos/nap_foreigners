@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface SunDokRepo extends JpaRepository<SunDok, BigDecimal> {
 
-    @Query("select d from SunDok d where d.prcId = :prcId")
+    @Query("select d from SunDok d where d.prcId = :prcId order by d.audytDU desc")
     Optional<List<SunDok>> getDocumentForPrc(@Param("prcId") BigDecimal prcId);
 
 }

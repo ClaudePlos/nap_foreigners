@@ -33,7 +33,8 @@ public class SunDokService {
         DocumentDTO docDTO = new DocumentDTO();
         docDTO.setId(doc.getId());
         docDTO.setNazwa(doc.getRodzajDok());
-        docDTO.setOpis("http://fs1/ftp/" + doc.getSciezka().replace("/home/plusworkflow/Dokumenty",""));
+        //docDTO.setOpis("http://fs1/ftp/" + doc.getSciezka().replace("/home/plusworkflow/Dokumenty",""));
+        docDTO.setOpis(doc.getAudytDU());
         docDTO.setPath(doc.getSciezka());
         docDTO.setPlatform("suncode");
         return docDTO;
