@@ -356,6 +356,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
         napForeignerLog.setProcessId(item.getProcessId());
         napForeignerLog.setWhoRunInInap(item.getWhoRunInInap());
         napForeignerLog.setSkForApplication(item.getSkForApplication());
+        napForeignerLog.setPlatform(item.getPlatform());
         napForeignerLogService.save(napForeignerLog);
     }
 
