@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -47,6 +48,9 @@ public class Foreigner {
 
     @Column(name = "PLATFORM")
     private String platform;
+
+    @Column(name = "zat_data_zmiany")
+    private LocalDate zatDataZmiany;
 
     public Foreigner() {
     }
@@ -145,5 +149,13 @@ public class Foreigner {
 
     public void setPlatform(String platform) {
         this.platform = platform;
+    }
+
+    public LocalDate getZatDataZmiany() {
+        return zatDataZmiany;
+    }
+
+    public void setZatDataZmiany(LocalDate zatDataZmiany) {
+        this.zatDataZmiany = zatDataZmiany;
     }
 }

@@ -2,6 +2,7 @@ package pl.kskowronski.data.entity.egeria.ek;
 
 import javax.persistence.Column;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 public class WorkerDTO {
@@ -21,10 +22,9 @@ public class WorkerDTO {
     private Date runDate;
     private String status;
     private String frmName;
-
     private String typeOfAgreement;
-
     private String platform;
+    private LocalDate dataOd;
 
     public WorkerDTO() {
     }
@@ -165,4 +165,11 @@ public class WorkerDTO {
         this.platform = platform;
     }
 
+    public LocalDate getDataOd() {
+        return dataOd;
+    }
+
+    public void setDataOd(LocalDate dataOd) {
+        this.dataOd = dataOd;
+    }
 }

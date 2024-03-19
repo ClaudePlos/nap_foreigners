@@ -99,7 +99,17 @@ public class WorkersToAcceptationView extends HorizontalLayout {
         filterText.addValueChangeListener(e -> updateList());
         add(filterText, new Label("Ilość wierszy: "), labSizeRowGrid);
 
-        gridWorkersToAccept.setColumns("status","procesId", "prcNumer", "prcNazwisko", "prcImie", "prcObywatelstwo");
+        gridWorkersToAccept.setColumns();
+        gridWorkersToAccept.addColumn("status").setWidth("25px");
+        gridWorkersToAccept.addColumn("procesId");
+        gridWorkersToAccept.addColumn("prcNumer");
+        gridWorkersToAccept.addColumn("prcNazwisko");
+
+        gridWorkersToAccept.addColumn("prcImie");
+        gridWorkersToAccept.addColumn("prcObywatelstwo");
+        gridWorkersToAccept.addColumn("dataOd");
+
+        //gridWorkersToAccept.setColumns("status", "procesId", "prcNumer", "prcNazwisko", "prcImie", "prcObywatelstwo", "dataOd");
 
         gridWorkersToAccept.addColumn(WorkerDTO::getTypeOfAgreement).setHeader("Um").setWidth("50px");;
 
