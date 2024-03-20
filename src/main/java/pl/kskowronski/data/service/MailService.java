@@ -31,7 +31,7 @@ public class MailService {
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
-        mimeMessageHelper.setFrom("obcokrajowcy@rekeep.pl");
+        mimeMessageHelper.setFrom("obcokrajowcy.mailer@rekeep.pl");
         mimeMessageHelper.setTo(to);
         mimeMessageHelper.setCc(cc);
         mimeMessageHelper.setSubject(subject);
@@ -49,7 +49,7 @@ public class MailService {
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
-        mimeMessageHelper.setFrom("obcokrajowcy@rekeep.pl");
+        mimeMessageHelper.setFrom("obcokrajowcy.mailer@rekeep.pl");
         mimeMessageHelper.setTo("klaudiusz.skowronski@rekeep.pl");
         mimeMessageHelper.setCc("claude-plos@o2.pl");
         mimeMessageHelper.setSubject(subject);
