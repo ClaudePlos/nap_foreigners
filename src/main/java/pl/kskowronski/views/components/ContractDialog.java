@@ -198,7 +198,9 @@ public class ContractDialog extends Dialog {
             add(new Html("<div><br></div>"));
             add( " " +  f.getZatTopic());
             add(new Html("<div><br></div>"));
-            add( "Rodzaj umowy: " +  dictionaryService.getTypeOfContract(f.getZatFRodzaj()).get());add(new Html("<div></div>"));
+            if (f.getZatFRodzaj() != null) {
+                add( "Rodzaj umowy: " +  dictionaryService.getTypeOfContract(f.getZatFRodzaj()).get());add(new Html("<div></div>"));
+            }
             add( "Typ stawki: " +  f.getZatTYpeOfRate());add(new Html("<div></div>"));
             add( "Stawka: " +  f.getZatStawka());add(new Html("<div><br></div>"));
             add( "DATA_OD: " +  f.getZatDataOd().toString().substring(0,10));add(new Html("<div><br></div>"));
