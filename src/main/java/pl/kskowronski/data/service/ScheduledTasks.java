@@ -26,7 +26,7 @@ public class ScheduledTasks {
         this.processInstanceService = processInstanceService;
     }
 
-    @Scheduled(cron = "0 42 13 * * MON-FRI")
+    @Scheduled(cron = "0 30 8 * * MON-FRI")
     public void checkSuspendedAndSendEmail() throws Exception {
         System.out.println("TEST / ***************************");
         LocalDate today = LocalDate.now();
@@ -50,7 +50,7 @@ public class ScheduledTasks {
                 to = runProcess + "@rekeep.pl";
             }
 
-            sendMailTo( "claude-plos@o2.pl"//to
+            sendMailTo( to
                     ,null
                     , f.getDescription()
                     , topic );
