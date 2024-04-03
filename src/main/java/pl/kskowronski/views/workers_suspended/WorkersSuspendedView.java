@@ -228,7 +228,7 @@ public class WorkersSuspendedView extends HorizontalLayout {
                         napForeignerLog.setId(item.getId());
                         napForeignerLog.setPrcId(item.getPrcId());
                         napForeignerLog.setStatus(NapForeignerLog.STATUS_SUSPENDED);
-                        napForeignerLog.setDescription("Zawieszone przez HR (" + userLogged.getUsername()  +")");
+                        napForeignerLog.setDescription("Zawieszone przez HR (" + userLogged.getUsername()  +") Powód: " + inputReject.getValue());
                         napForeignerLog.setWhoDecided(userLogged.getUsername());
                         napForeignerLog.setWhenDecided(new Date());
                         napForeignerLog.setProcessId(item.getProcessId());

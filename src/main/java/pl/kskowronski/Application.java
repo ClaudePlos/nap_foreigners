@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.vaadin.artur.helpers.LaunchUtil;
 
 /**
@@ -20,6 +21,7 @@ import org.vaadin.artur.helpers.LaunchUtil;
  *
  */
 @SpringBootApplication
+@EnableScheduling
 @PWA(name = "nap_foreigners", shortName = "nap_foreigners")
 public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
 
