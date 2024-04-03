@@ -51,7 +51,7 @@ public class ScheduledTasks {
             }
 
             sendMailTo( to
-                    ,null
+                    ,f.getWhoDecided() + "@rekeep.pl"
                     , f.getDescription()
                     , topic );
 
