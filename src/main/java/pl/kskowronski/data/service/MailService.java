@@ -33,7 +33,9 @@ public class MailService {
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
         mimeMessageHelper.setFrom("obcokrajowcy.mailer@rekeep.pl");
         mimeMessageHelper.setTo(to);
-        mimeMessageHelper.setCc(cc);
+        if (cc != null){
+            mimeMessageHelper.setCc(cc);
+        }
         mimeMessageHelper.setSubject(subject);
         mimeMessageHelper.setText(text, isHtmlContent);
         javaMailSender.send(mimeMessage);
