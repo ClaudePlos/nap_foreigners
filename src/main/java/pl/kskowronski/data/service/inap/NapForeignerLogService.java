@@ -73,7 +73,7 @@ public class NapForeignerLogService extends CrudService<NapForeignerLog, BigDeci
         Optional<List<NapForeignerLogDTO>> foreignersDTO = Optional.of(new ArrayList<>());
         LocalDate ldLastDay = LocalDate.parse( period+"-01", mapperDate.ldYYYYMMDD).with(TemporalAdjusters.lastDayOfMonth());
         Optional<List<NapForeignerLog>> foreigners = repo.findAllSuspendedForPeriod(mapperDate.dtYYYYMMDD.parse(period+"-01")
-                , Date.from(ldLastDay.atStartOfDay(ZoneId.systemDefault()).toInstant()) );
+                , Date.from(ldLastDay.atTime(23, 59, 0).atZone(ZoneId.systemDefault()).toInstant()) );
         if (foreigners.isPresent()) {
             foreigners.get().stream().forEach(item -> foreignersDTO.get().add(mapperNapForeignerLog(item)));
         }
